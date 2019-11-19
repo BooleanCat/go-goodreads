@@ -1,4 +1,4 @@
-package acceptance
+package httpclient_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestAcceptance(t *testing.T) {
+func TestHTTPClient(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "acceptance suite")
+	RunSpecs(t, "httpclient suite")
 }
