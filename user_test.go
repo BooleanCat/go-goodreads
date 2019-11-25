@@ -27,6 +27,14 @@ var _ = Describe("UserShow", func() {
 					<id>foo</id>
 					<name>Foo Bar</name>
 					<user_name>fbar</user_name>
+					<link><![CDATA[https://foo.com/fbar]]></link>
+					<image_url><![CDATA[https://foo.com/fbar.png]]></image_url>
+					<small_image_url><![CDATA[https://foo.com/fbarmini.png]]></small_image_url>
+					<about>A test user</about>
+					<age>30</age>
+					<gender>male</gender>
+					<location>London, The United Kingdom</location>
+					<website>https://foo.com</website>
 				</user>
 			</goodreads_response>
 		`)
@@ -47,9 +55,17 @@ var _ = Describe("UserShow", func() {
 
 		By("decoding the user", func() {
 			Expect(user).To(Equal(goodreads.User{
-				ID:       "foo",
-				Name:     "Foo Bar",
-				UserName: "fbar",
+				ID:            "foo",
+				Name:          "Foo Bar",
+				UserName:      "fbar",
+				Link:          "https://foo.com/fbar",
+				ImageURL:      "https://foo.com/fbar.png",
+				SmallImageURL: "https://foo.com/fbarmini.png",
+				About:         "A test user",
+				Age:           "30",
+				Gender:        "male",
+				Location:      "London, The United Kingdom",
+				Website:       "https://foo.com",
 			}))
 		})
 

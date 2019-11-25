@@ -7,9 +7,17 @@ import (
 )
 
 type User struct {
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	UserName string `xml:"user_name"`
+	ID            string `xml:"id"`
+	Name          string `xml:"name"`
+	UserName      string `xml:"user_name"`
+	Link          string `xml:"link"`
+	ImageURL      string `xml:"image_url"`
+	SmallImageURL string `xml:"small_image_url"`
+	About         string `xml:"about"`
+	Age           string `xml:"age"`
+	Gender        string `xml:"gender"`
+	Location      string `xml:"location"`
+	Website       string `xml:"website"`
 }
 
 func (client Client) UserShow(id string) (User, error) {
