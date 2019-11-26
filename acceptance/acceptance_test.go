@@ -36,4 +36,12 @@ var _ = Describe("go-goodreads", func() {
 			Expect(author.Name).To(Equal("Philip K. Dick"))
 		})
 	})
+
+	Describe("/book/show/{book_id}.xml", func() {
+		It("fetches the book", func() {
+			book, err := client.BookShow("36402034")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(book.Title).To(Equal("Do Androids Dream of Electric Sheep?"))
+		})
+	})
 })
