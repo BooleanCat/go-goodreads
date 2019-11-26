@@ -2,7 +2,6 @@ package acceptance_test
 
 import (
 	"net/http"
-	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -12,13 +11,9 @@ import (
 )
 
 var _ = Describe("go-goodreads", func() {
-	var (
-		ticker *time.Ticker
-		client goodreads.Client
-	)
+	var client goodreads.Client
 
 	BeforeEach(func() {
-		ticker = time.NewTicker(time.Second * 2)
 		client = goodreads.NewClient(
 			httpclient.WithKey(httpclient.RateLimited(
 				http.DefaultClient, ticker,
@@ -26,15 +21,19 @@ var _ = Describe("go-goodreads", func() {
 		)
 	})
 
-	AfterEach(func() {
-		ticker.Stop()
-	})
-
 	Describe("/user/show/{user_id}.xml", func() {
 		It("fetches the user", func() {
 			user, err := client.UserShow("101333864")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(user.UserName).To(Equal("tgodkin"))
+		})
+	})
+
+	Describe("/author/show/{author_id}.xml", func() {
+		It("fetches the author", func() {
+			author, err := client.AuthorShow("4764")
+			Expect(err).NotTo(HaveOccurred())
+			Expect(author.Name).To(Equal("Philip K. Dick"))
 		})
 	})
 })
