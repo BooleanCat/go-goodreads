@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/BooleanCat/go-goodreads"
+	"github.com/BooleanCat/go-goodreads/assert"
 	"github.com/BooleanCat/go-goodreads/fakes"
 	"github.com/BooleanCat/go-goodreads/httpclient"
 )
@@ -39,29 +39,13 @@ func TestClient_BookShow(t *testing.T) {
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
 	book, err := client.BookShow("foo")
-	if err != nil {
-		t.Fatalf(`expected error "%v" not to have occurred`, err)
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, book, goodreads.Book{ID: "foo", Title: "baz bar"})
 
-	want := goodreads.Book{ID: "foo", Title: "baz bar"}
-	if book != want {
-		t.Fatalf(`expected book "%v" to equal "%v"`, book, want)
-	}
-
-	if fakeDoer.DoCallCount() != 1 {
-		t.Fatal("expected request to have been performed")
-	}
-
+	assert.Equal(t, fakeDoer.DoCallCount(), 1)
 	request := fakeDoer.DoArgsForCall(0)
-
-	if request.Method != http.MethodGet {
-		t.Fatalf(`expected request method to equal "%s"`, http.MethodGet)
-	}
-
-	wantURL := "https://www.goodreads.com/book/show/foo.xml?key=key"
-	if request.URL.String() != wantURL {
-		t.Fatalf(`expected URL "%s" to equal %s`, request.URL.String(), wantURL)
-	}
+	assert.Equal(t, request.Method, http.MethodGet)
+	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/book/show/foo.xml?key=key")
 }
 
 func TestClient_BookShow_CreateRequestFails(t *testing.T) {
@@ -73,17 +57,8 @@ func TestClient_BookShow_CreateRequestFails(t *testing.T) {
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
 	_, err := client.BookShow("%%%%%%")
-	if err == nil {
-		t.Fatal("expected failure")
-	}
-
-	if !strings.Contains(err.Error(), "create request") {
-		t.Fatalf(`expected error "%s" to contain "create request"`, err.Error())
-	}
-
-	if fakeDoer.DoCallCount() != 0 {
-		t.Fatal("expected request not to have been performed")
-	}
+	assert.ErrorMatches(t, err, `^create request: `)
+	assert.Equal(t, fakeDoer.DoCallCount(), 0)
 }
 
 func TestClient_BookShow_DoRequestFails(t *testing.T) {
@@ -92,13 +67,7 @@ func TestClient_BookShow_DoRequestFails(t *testing.T) {
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
 	_, err := client.BookShow("foo")
-	if err == nil {
-		t.Fatal("expected failure")
-	}
-
-	if err.Error() != "do request: oops" {
-		t.Fatalf(`expected error "%s" to equal "do request: oops"`, err.Error())
-	}
+	assert.ErrorMatches(t, err, `^do request: oops$`)
 }
 
 func TestClient_BookShow_InvalidStatusCode(t *testing.T) {
@@ -110,14 +79,7 @@ func TestClient_BookShow_InvalidStatusCode(t *testing.T) {
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
 	_, err := client.BookShow("foo")
-	if err == nil {
-		t.Fatal("expected failure")
-	}
-
-	want := `unexpected status code "405"`
-	if err.Error() != want {
-		t.Fatalf(`expected error "%s" to equal "%s`, err.Error(), want)
-	}
+	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
 func TestClient_BookShow_DecodeFails(t *testing.T) {
@@ -129,13 +91,7 @@ func TestClient_BookShow_DecodeFails(t *testing.T) {
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
 	_, err := client.BookShow("foo")
-	if err == nil {
-		t.Fatal("expected failure")
-	}
-
-	if !strings.Contains(err.Error(), "decode response") {
-		t.Fatalf(`expected error "%s" to contain "decode response"`, err.Error())
-	}
+	assert.ErrorMatches(t, err, `^decode response: `)
 }
 
 const bookShowResponseBody string = `

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/BooleanCat/go-goodreads/assert"
 	"github.com/BooleanCat/go-goodreads/fakes"
 	"github.com/BooleanCat/go-goodreads/httpclient"
 )
@@ -18,13 +19,8 @@ func TestRateLimited(t *testing.T) {
 	client := httpclient.RateLimited(fakeDoer, ticker)
 
 	_, err := client.Do(new(http.Request))
-	if err != nil {
-		t.Fatalf(`expected error "%v" not to have occurred`, err)
-	}
-
-	if fakeDoer.DoCallCount() != 1 {
-		t.Fatal("expected request to have been performed")
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, fakeDoer.DoCallCount(), 1)
 }
 
 func TestRateLimited_DelegateDoFails(t *testing.T) {
@@ -36,11 +32,5 @@ func TestRateLimited_DelegateDoFails(t *testing.T) {
 	client := httpclient.RateLimited(fakeDoer, ticker)
 
 	_, err := client.Do(new(http.Request))
-	if err == nil {
-		t.Fatal("expected failure")
-	}
-
-	if err.Error() != "oops" {
-		t.Fatalf(`expected error "%s" to equal "oops"`, err.Error())
-	}
+	assert.ErrorMatches(t, err, `oops`)
 }
