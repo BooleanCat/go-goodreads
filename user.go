@@ -26,19 +26,9 @@ func (client Client) UserShow(id string) (User, error) {
 	}
 
 	url := fmt.Sprintf("%s/user/show/%s.xml", goodreadsURL, id)
-	request, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return User{}, fmt.Errorf("create request: %w", err)
-	}
-
-	request, err = client.addGoodreadsKeyQueryParam(request)
+	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return User{}, err
-	}
-
-	response, err := client.Client.Do(request)
-	if err != nil {
-		return User{}, fmt.Errorf("do request: %w", err)
 	}
 	defer closeIgnoreError(response.Body)
 

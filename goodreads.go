@@ -2,6 +2,7 @@ package goodreads
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -60,6 +61,25 @@ type doer interface {
 
 func closeIgnoreError(c io.Closer) {
 	_ = c.Close()
+}
+
+func (client Client) doNewRequestWithKey(method, url string, body io.Reader) (*http.Response, error) {
+	request, err := http.NewRequest(method, url, body)
+	if err != nil {
+		return nil, fmt.Errorf("create request: %w", err)
+	}
+
+	request, err = client.addGoodreadsKeyQueryParam(request)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.Client.Do(request)
+	if err != nil {
+		return nil, fmt.Errorf("do request: %w", err)
+	}
+
+	return response, nil
 }
 
 //go:generate counterfeiter --generate

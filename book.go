@@ -17,19 +17,9 @@ func (client Client) BookShow(id string) (Book, error) {
 	}
 
 	url := fmt.Sprintf("%s/book/show/%s.xml", goodreadsURL, id)
-	request, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return Book{}, fmt.Errorf("create request: %w", err)
-	}
-
-	request, err = client.addGoodreadsKeyQueryParam(request)
+	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return Book{}, err
-	}
-
-	response, err := client.Client.Do(request)
-	if err != nil {
-		return Book{}, fmt.Errorf("do request: %w", err)
 	}
 	defer closeIgnoreError(response.Body)
 
