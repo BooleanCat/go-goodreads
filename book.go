@@ -7,8 +7,23 @@ import (
 )
 
 type Book struct {
-	ID    string `xml:"id"`
-	Title string `xml:"title"`
+	ID               string `xml:"id"`
+	Title            string `xml:"title"`
+	ISBN             string `xml:"isbn"`
+	ISBN13           string `xml:"isbn13"`
+	ASIN             string `xml:"asin"`
+	KindleASIN       string `xml:"kindle_asin"`
+	MarketplaceID    string `xml:"marketplace_id"`
+	CountryCode      string `xml:"country_code"`
+	ImageURL         string `xml:"image_url"`
+	SmallImageURL    string `xml:"small_image_url"`
+	PublicationYear  string `xml:"publication_year"`
+	PublicationMonth string `xml:"publication_month"`
+	PublicationDay   string `xml:"publication_day"`
+	Publisher        string `xml:"publisher"`
+	LanguageCode     string `xml:"language_code"`
+	IsEbook          string `xml:"is_ebook"`
+	Description      string `xml:"description"`
 }
 
 func (client Client) BookShow(id string) (Book, error) {

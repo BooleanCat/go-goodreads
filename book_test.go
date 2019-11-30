@@ -40,7 +40,25 @@ func TestClient_BookShow(t *testing.T) {
 
 	book, err := client.BookShow("foo")
 	assert.Nil(t, err)
-	assert.Equal(t, book, goodreads.Book{ID: "foo", Title: "baz bar"})
+	assert.Equal(t, book, goodreads.Book{
+		ID:               "foo",
+		Title:            "baz bar",
+		ISBN:             "isbn",
+		ISBN13:           "isbn13",
+		ASIN:             "asin",
+		KindleASIN:       "kindle asin",
+		MarketplaceID:    "foobar",
+		CountryCode:      "GB",
+		ImageURL:         "https://foo.com/bar.png",
+		SmallImageURL:    "https://foo.com/baz.png",
+		PublicationYear:  "2019",
+		PublicationMonth: "2",
+		PublicationDay:   "22",
+		Publisher:        "bcat",
+		LanguageCode:     "eng",
+		IsEbook:          "true",
+		Description:      "What a book.",
+	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
 	request := fakeDoer.DoArgsForCall(0)
@@ -99,6 +117,21 @@ const bookShowResponseBody string = `
 		<book>
 			<id>foo</id>
 			<title>baz bar</title>
+			<isbn>isbn</isbn>
+			<isbn13>isbn13</isbn13>
+			<asin>asin</asin>
+			<kindle_asin>kindle asin</kindle_asin>
+			<marketplace_id>foobar</marketplace_id>
+			<country_code>GB</country_code>
+			<image_url>https://foo.com/bar.png</image_url>
+			<small_image_url>https://foo.com/baz.png</small_image_url>
+			<publication_year>2019</publication_year>
+			<publication_month>2</publication_month>
+			<publication_day>22</publication_day>
+			<publisher>bcat</publisher>
+			<language_code>eng</language_code>
+			<is_ebook>true</is_ebook>
+			<description>What a book.</description>
 		</book>
 	</goodreads_response>
 `

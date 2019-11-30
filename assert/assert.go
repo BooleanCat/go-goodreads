@@ -19,13 +19,11 @@ func Equal(t *testing.T, v, w interface{}) {
 }
 
 func ErrorMatches(t *testing.T, err error, pattern string) {
-	expression := regexp.MustCompile(pattern)
-
 	if err == nil {
 		t.Fatal("expected err to have occurred")
 	}
 
-	if !expression.MatchString(err.Error()) {
+	if !regexp.MustCompile(pattern).MatchString(err.Error()) {
 		t.Fatalf(`expected error "%v" to match pattern "%s"`, err, pattern)
 	}
 }
