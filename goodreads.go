@@ -28,6 +28,10 @@ func NewClient() Client {
 	return client
 }
 
+func (client Client) String() string {
+	return fmt.Sprintf("{%v}", client.Client)
+}
+
 func (client Client) addGoodreadsKeyQueryParam(request *http.Request) (*http.Request, error) {
 	key, err := client.goodreadsKey()
 	if err != nil {
