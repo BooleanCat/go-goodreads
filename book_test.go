@@ -3,110 +3,146 @@ package goodreads_test
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"strings"
+	"testing"
 
 	"github.com/BooleanCat/go-goodreads"
 	"github.com/BooleanCat/go-goodreads/fakes"
+	"github.com/BooleanCat/go-goodreads/httpclient"
 )
 
-var _ = Describe("BookShow", func() {
-	var (
-		client       goodreads.Client
-		fakeDoer     *fakes.FakeDoer
-		responseBody *bytes.Buffer
-	)
+func ExampleClient_BookShow() {
+	client := goodreads.Client{
+		Client: httpclient.RateLimited(http.DefaultClient, ticker),
+	}
 
-	BeforeEach(func() {
-		responseBody = bytes.NewBufferString(`
-			<goodreads_response>
-				<book>
-					<id>foo</id>
-					<title>baz bar</title>
-				</book>
-			</goodreads_response>
-		`)
-		fakeDoer = new(fakes.FakeDoer)
-		fakeDoer.DoReturns(&http.Response{
-			Body:       ioutil.NopCloser(responseBody),
-			StatusCode: http.StatusOK,
-		}, nil)
-		client = goodreads.NewClient(fakeDoer)
-	})
+	book, err := client.BookShow("36402034")
+	if err != nil {
+		panic(err)
+	}
 
-	It("fetches the specified book by ID", func() {
-		book, err := client.BookShow("foo")
+	fmt.Println(book.Title)
+	// Output:
+	// Do Androids Dream of Electric Sheep?
+}
 
-		By("succeeding", func() {
-			Expect(err).NotTo(HaveOccurred())
-		})
+func TestClient_BookShow(t *testing.T) {
+	responseBody := bytes.NewBufferString(bookShowResponseBody)
+	fakeDoer := new(fakes.FakeDoer)
+	fakeDoer.DoReturns(&http.Response{
+		Body:       ioutil.NopCloser(responseBody),
+		StatusCode: http.StatusOK,
+	}, nil)
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-		By("decoding the book", func() {
-			Expect(book).To(Equal(goodreads.Book{
-				ID:    "foo",
-				Title: "baz bar",
-			}))
-		})
+	book, err := client.BookShow("foo")
+	if err != nil {
+		t.Fatalf(`expected error "%v" not to have occurred`, err)
+	}
 
-		By("hitting the goodreads API correctly", func() {
-			Expect(fakeDoer.DoCallCount()).To(Equal(1))
-			request := fakeDoer.DoArgsForCall(0)
-			Expect(request.Method).To(Equal(http.MethodGet))
-			Expect(request.URL.String()).To(Equal("https://www.goodreads.com/book/show/foo.xml"))
-		})
-	})
+	want := goodreads.Book{ID: "foo", Title: "baz bar"}
+	if book != want {
+		t.Fatalf(`expected book "%v" to equal "%v"`, book, want)
+	}
 
-	When("creating the request fails", func() {
-		It("fails", func() {
-			By("returning an error", func() {
-				_, err := client.BookShow("%%%%%%")
-				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("create request"))
-			})
+	if fakeDoer.DoCallCount() != 1 {
+		t.Fatal("expected request to have been performed")
+	}
 
-			By("not hitting the goodreads API", func() {
-				Expect(fakeDoer.DoCallCount()).To(BeZero())
-			})
-		})
-	})
+	request := fakeDoer.DoArgsForCall(0)
 
-	When("performing the request fails", func() {
-		BeforeEach(func() {
-			fakeDoer.DoReturns(nil, errors.New("oops"))
-		})
+	if request.Method != http.MethodGet {
+		t.Fatalf(`expected request method to equal "%s"`, http.MethodGet)
+	}
 
-		It("returns an error", func() {
-			_, err := client.BookShow("foo")
-			Expect(err).To(MatchError("do request: oops"))
-		})
-	})
+	wantURL := "https://www.goodreads.com/book/show/foo.xml?key=key"
+	if request.URL.String() != wantURL {
+		t.Fatalf(`expected URL "%s" to equal %s`, request.URL.String(), wantURL)
+	}
+}
 
-	When("the response status code is not 200 OK", func() {
-		BeforeEach(func() {
-			fakeDoer.DoReturns(&http.Response{
-				Body:       ioutil.NopCloser(responseBody),
-				StatusCode: http.StatusMethodNotAllowed,
-			}, nil)
-		})
+func TestClient_BookShow_CreateRequestFails(t *testing.T) {
+	fakeDoer := new(fakes.FakeDoer)
+	fakeDoer.DoReturns(&http.Response{
+		Body:       ioutil.NopCloser(new(bytes.Buffer)),
+		StatusCode: http.StatusOK,
+	}, nil)
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-		It("returns an error", func() {
-			_, err := client.BookShow("foo")
-			Expect(err).To(MatchError(`unexpected status code "405"`))
-		})
-	})
+	_, err := client.BookShow("%%%%%%")
+	if err == nil {
+		t.Fatal("expected failure")
+	}
 
-	When("decoding the response body fails", func() {
-		BeforeEach(func() {
-			responseBody.Reset()
-		})
+	if !strings.Contains(err.Error(), "create request") {
+		t.Fatalf(`expected error "%s" to contain "create request"`, err.Error())
+	}
 
-		It("returns an error", func() {
-			_, err := client.BookShow("foo")
-			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("decode response"))
-		})
-	})
-})
+	if fakeDoer.DoCallCount() != 0 {
+		t.Fatal("expected request not to have been performed")
+	}
+}
+
+func TestClient_BookShow_DoRequestFails(t *testing.T) {
+	fakeDoer := new(fakes.FakeDoer)
+	fakeDoer.DoReturns(nil, errors.New("oops"))
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+
+	_, err := client.BookShow("foo")
+	if err == nil {
+		t.Fatal("expected failure")
+	}
+
+	if err.Error() != "do request: oops" {
+		t.Fatalf(`expected error "%s" to equal "do request: oops"`, err.Error())
+	}
+}
+
+func TestClient_BookShow_InvalidStatusCode(t *testing.T) {
+	fakeDoer := new(fakes.FakeDoer)
+	fakeDoer.DoReturns(&http.Response{
+		Body:       ioutil.NopCloser(new(bytes.Buffer)),
+		StatusCode: http.StatusMethodNotAllowed,
+	}, nil)
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+
+	_, err := client.BookShow("foo")
+	if err == nil {
+		t.Fatal("expected failure")
+	}
+
+	want := `unexpected status code "405"`
+	if err.Error() != want {
+		t.Fatalf(`expected error "%s" to equal "%s`, err.Error(), want)
+	}
+}
+
+func TestClient_BookShow_DecodeFails(t *testing.T) {
+	fakeDoer := new(fakes.FakeDoer)
+	fakeDoer.DoReturns(&http.Response{
+		Body:       ioutil.NopCloser(new(bytes.Buffer)),
+		StatusCode: http.StatusOK,
+	}, nil)
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+
+	_, err := client.BookShow("foo")
+	if err == nil {
+		t.Fatal("expected failure")
+	}
+
+	if !strings.Contains(err.Error(), "decode response") {
+		t.Fatalf(`expected error "%s" to contain "decode response"`, err.Error())
+	}
+}
+
+const bookShowResponseBody string = `
+	<goodreads_response>
+		<book>
+			<id>foo</id>
+			<title>baz bar</title>
+		</book>
+	</goodreads_response>
+`

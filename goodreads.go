@@ -1,16 +1,55 @@
 package goodreads
 
 import (
+	"errors"
 	"io"
 	"net/http"
+	"os"
 )
 
 type Client struct {
-	client doer
+	Client doer
+	Key    string
+	Secret string
 }
 
-func NewClient(delegate doer) Client {
-	return Client{client: delegate}
+func NewClient() Client {
+	client := Client{Client: http.DefaultClient}
+
+	if key := os.Getenv("GOODREADS_KEY"); key != "" {
+		client.Key = key
+	}
+
+	if secret := os.Getenv("GOODREADS_SECRET"); secret != "" {
+		client.Secret = secret
+	}
+
+	return client
+}
+
+func (client Client) addGoodreadsKeyQueryParam(request *http.Request) (*http.Request, error) {
+	key, err := client.goodreadsKey()
+	if err != nil {
+		return nil, err
+	}
+
+	query := request.URL.Query()
+	query.Add("key", key)
+	request.URL.RawQuery = query.Encode()
+
+	return request, nil
+}
+
+func (client Client) goodreadsKey() (string, error) {
+	if client.Key != "" {
+		return client.Key, nil
+	}
+
+	if key := os.Getenv("GOODREADS_KEY"); key != "" {
+		return key, nil
+	}
+
+	return "", errors.New("goodreads API key not set")
 }
 
 const goodreadsURL = "https://www.goodreads.com"
@@ -23,5 +62,5 @@ func closeIgnoreError(c io.Closer) {
 	_ = c.Close()
 }
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate counterfeiter --generate
 //counterfeiter:generate -o fakes/doer.go . doer

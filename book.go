@@ -22,7 +22,12 @@ func (client Client) BookShow(id string) (Book, error) {
 		return Book{}, fmt.Errorf("create request: %w", err)
 	}
 
-	response, err := client.client.Do(request)
+	request, err = client.addGoodreadsKeyQueryParam(request)
+	if err != nil {
+		return Book{}, err
+	}
+
+	response, err := client.Client.Do(request)
 	if err != nil {
 		return Book{}, fmt.Errorf("do request: %w", err)
 	}

@@ -31,7 +31,12 @@ func (client Client) UserShow(id string) (User, error) {
 		return User{}, fmt.Errorf("create request: %w", err)
 	}
 
-	response, err := client.client.Do(request)
+	request, err = client.addGoodreadsKeyQueryParam(request)
+	if err != nil {
+		return User{}, err
+	}
+
+	response, err := client.Client.Do(request)
 	if err != nil {
 		return User{}, fmt.Errorf("do request: %w", err)
 	}
