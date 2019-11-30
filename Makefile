@@ -1,18 +1,13 @@
-.PHONY: test lint vet test-unit test-acceptance
+.PHONY: test lint vet generate
 
-ginkgo := go run github.com/onsi/ginkgo/ginkgo --race --randomizeAllSpecs -r
-lint := go run github.com/golangci/golangci-lint/cmd/golangci-lint
-
-test: vet lint test-unit test-acceptance
+test: vet lint
+	go test ./... -v
 
 vet:
 	go vet ./...
 
 lint:
-	$(lint) run
+	golangci-lint run
 
-test-unit:
-	$(ginkgo) --skipPackage acceptance
-
-test-acceptance:
-	$(ginkgo) acceptance
+generate:
+	go generate ./...

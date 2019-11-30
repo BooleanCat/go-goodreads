@@ -3,74 +3,44 @@ package httpclient_test
 import (
 	"errors"
 	"net/http"
+	"testing"
 	"time"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 
 	"github.com/BooleanCat/go-goodreads/fakes"
 	"github.com/BooleanCat/go-goodreads/httpclient"
 )
 
-var _ = Describe("RateLimitedClient", func() {
-	var fakeDoer *fakes.FakeDoer
+func TestRateLimited(t *testing.T) {
+	fakeDoer := new(fakes.FakeDoer)
 
-	BeforeEach(func() {
-		fakeDoer = new(fakes.FakeDoer)
-	})
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	client := httpclient.RateLimited(fakeDoer, ticker)
 
-	Describe("RateLimitedClient", func() {
-		It("makes http requests", func() {
-			ticker := time.NewTicker(time.Millisecond)
-			defer ticker.Stop()
-			client := httpclient.RateLimited(fakeDoer, ticker)
+	_, err := client.Do(new(http.Request))
+	if err != nil {
+		t.Fatalf(`expected error "%v" not to have occurred`, err)
+	}
 
-			_, err := client.Do(new(http.Request))
+	if fakeDoer.DoCallCount() != 1 {
+		t.Fatal("expected request to have been performed")
+	}
+}
 
-			By("succeeding", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
+func TestRateLimited_DelegateDoFails(t *testing.T) {
+	fakeDoer := new(fakes.FakeDoer)
+	fakeDoer.DoReturns(nil, errors.New("oops"))
 
-			By("invoking the delegate do", func() {
-				Expect(fakeDoer.DoCallCount()).To(Equal(1))
-			})
-		})
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	client := httpclient.RateLimited(fakeDoer, ticker)
 
-		When("the delegate do fails", func() {
-			BeforeEach(func() {
-				fakeDoer.DoReturns(nil, errors.New("oops"))
-			})
+	_, err := client.Do(new(http.Request))
+	if err == nil {
+		t.Fatal("expected failure")
+	}
 
-			It("returns the error", func() {
-				ticker := time.NewTicker(time.Millisecond)
-				defer ticker.Stop()
-				client := httpclient.RateLimited(fakeDoer, ticker)
-
-				_, err := client.Do(new(http.Request))
-				Expect(err).To(MatchError("oops"))
-			})
-		})
-	})
-
-	Describe("KeyClient", func() {
-		It(`add the "key" query param`, func() {
-			request, err := http.NewRequest(http.MethodGet, "https://example.com", nil)
-			Expect(err).NotTo(HaveOccurred())
-			client := httpclient.WithKey(fakeDoer, "foo")
-			_, err = client.Do(request)
-
-			By("succeeding", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
-			By("invoking the delegate do", func() {
-				Expect(fakeDoer.DoCallCount()).To(Equal(1))
-			})
-
-			By("adding the query param", func() {
-				got := fakeDoer.DoArgsForCall(0)
-				Expect(got.URL.String()).To(ContainSubstring("key=foo"))
-			})
-		})
-	})
-})
+	if err.Error() != "oops" {
+		t.Fatalf(`expected error "%s" to equal "oops"`, err.Error())
+	}
+}
