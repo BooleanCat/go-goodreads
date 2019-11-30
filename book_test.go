@@ -41,23 +41,31 @@ func TestClient_BookShow(t *testing.T) {
 	book, err := client.BookShow("foo")
 	assert.Nil(t, err)
 	assert.Equal(t, book, goodreads.Book{
-		ID:               "foo",
-		Title:            "baz bar",
-		ISBN:             "isbn",
-		ISBN13:           "isbn13",
-		ASIN:             "asin",
-		KindleASIN:       "kindle asin",
-		MarketplaceID:    "foobar",
-		CountryCode:      "GB",
-		ImageURL:         "https://foo.com/bar.png",
-		SmallImageURL:    "https://foo.com/baz.png",
-		PublicationYear:  "2019",
-		PublicationMonth: "2",
-		PublicationDay:   "22",
-		Publisher:        "bcat",
-		LanguageCode:     "eng",
-		IsEbook:          "true",
-		Description:      "What a book.",
+		ID:                 "foo",
+		Title:              "baz bar",
+		ISBN:               "isbn",
+		ISBN13:             "isbn13",
+		ASIN:               "asin",
+		KindleASIN:         "kindle asin",
+		MarketplaceID:      "foobar",
+		CountryCode:        "GB",
+		ImageURL:           "https://foo.com/bar.png",
+		SmallImageURL:      "https://foo.com/baz.png",
+		PublicationYear:    "2019",
+		PublicationMonth:   "2",
+		PublicationDay:     "22",
+		Publisher:          "bcat",
+		LanguageCode:       "eng",
+		IsEbook:            "true",
+		Description:        "What a book.",
+		AverageRating:      "4.09",
+		NumPages:           "201",
+		Format:             "Kindle",
+		EditionInformation: "Best edition",
+		RatingsCount:       "98",
+		TextReviewsCount:   "42",
+		URL:                "https://foo.com/book",
+		Link:               "https://bar.com/book",
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
@@ -132,6 +140,14 @@ const bookShowResponseBody string = `
 			<language_code>eng</language_code>
 			<is_ebook>true</is_ebook>
 			<description>What a book.</description>
+			<average_rating>4.09</average_rating>
+			<num_pages>201</num_pages>
+			<format>Kindle</format>
+			<edition_information>Best edition</edition_information>
+			<ratings_count>98</ratings_count>
+			<text_reviews_count>42</text_reviews_count>
+			<url>https://foo.com/book</url>
+			<link>https://bar.com/book</link>
 		</book>
 	</goodreads_response>
 `

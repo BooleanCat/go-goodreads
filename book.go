@@ -7,23 +7,31 @@ import (
 )
 
 type Book struct {
-	ID               string `xml:"id"`
-	Title            string `xml:"title"`
-	ISBN             string `xml:"isbn"`
-	ISBN13           string `xml:"isbn13"`
-	ASIN             string `xml:"asin"`
-	KindleASIN       string `xml:"kindle_asin"`
-	MarketplaceID    string `xml:"marketplace_id"`
-	CountryCode      string `xml:"country_code"`
-	ImageURL         string `xml:"image_url"`
-	SmallImageURL    string `xml:"small_image_url"`
-	PublicationYear  string `xml:"publication_year"`
-	PublicationMonth string `xml:"publication_month"`
-	PublicationDay   string `xml:"publication_day"`
-	Publisher        string `xml:"publisher"`
-	LanguageCode     string `xml:"language_code"`
-	IsEbook          string `xml:"is_ebook"`
-	Description      string `xml:"description"`
+	ID                 string `xml:"id"`
+	Title              string `xml:"title"`
+	ISBN               string `xml:"isbn"`
+	ISBN13             string `xml:"isbn13"`
+	ASIN               string `xml:"asin"`
+	KindleASIN         string `xml:"kindle_asin"`
+	MarketplaceID      string `xml:"marketplace_id"`
+	CountryCode        string `xml:"country_code"`
+	ImageURL           string `xml:"image_url"`
+	SmallImageURL      string `xml:"small_image_url"`
+	PublicationYear    string `xml:"publication_year"`
+	PublicationMonth   string `xml:"publication_month"`
+	PublicationDay     string `xml:"publication_day"`
+	Publisher          string `xml:"publisher"`
+	LanguageCode       string `xml:"language_code"`
+	IsEbook            string `xml:"is_ebook"`
+	Description        string `xml:"description"`
+	AverageRating      string `xml:"average_rating"`
+	NumPages           string `xml:"num_pages"`
+	Format             string `xml:"format"`
+	EditionInformation string `xml:"edition_information"`
+	RatingsCount       string `xml:"ratings_count"`
+	TextReviewsCount   string `xml:"text_reviews_count"`
+	URL                string `xml:"url"`
+	Link               string `xml:"link"`
 }
 
 func (client Client) BookShow(id string) (Book, error) {
