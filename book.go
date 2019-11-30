@@ -34,6 +34,10 @@ type Book struct {
 	Link               string `xml:"link"`
 }
 
+type Books struct {
+	Books []Book `xml:"book"`
+}
+
 func (client Client) BookShow(id string) (Book, error) {
 	type goodreadsResponse struct {
 		Book Book `xml:"book"`

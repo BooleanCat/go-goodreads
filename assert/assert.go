@@ -1,6 +1,7 @@
 package assert
 
 import (
+	"reflect"
 	"regexp"
 	"strings"
 	"testing"
@@ -13,7 +14,7 @@ func Nil(t *testing.T, v interface{}) {
 }
 
 func Equal(t *testing.T, v, w interface{}) {
-	if v != w {
+	if !reflect.DeepEqual(v, w) {
 		t.Fatalf(`expected "%v" to equal "%v"`, v, w)
 	}
 }

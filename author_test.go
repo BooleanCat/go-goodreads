@@ -57,6 +57,9 @@ func TestClient_AuthorShow(t *testing.T) {
 		BornAt:               "1945/12/03",
 		DiedAt:               "1994/03/14",
 		GoodreadsAuthor:      "baz",
+		Books: goodreads.Books{Books: []goodreads.Book{
+			{Title: "Mediocre Book"},
+		}},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
@@ -126,6 +129,11 @@ const authorShowResponseBody string = `
 			<born_at>1945/12/03</born_at>
 			<died_at>1994/03/14</died_at>
 			<goodreads_author>baz</goodreads_author>
+			<books>
+				<book>
+					<title>Mediocre Book</title>
+				</book>
+			</books>
 		</author>
 	</goodreads_response>
 `
