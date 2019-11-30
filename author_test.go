@@ -40,7 +40,24 @@ func TestClient_AuthorShow(t *testing.T) {
 
 	author, err := client.AuthorShow("foo")
 	assert.Nil(t, err)
-	assert.Equal(t, author, goodreads.Author{ID: "foo", Name: "Baz"})
+	assert.Equal(t, author, goodreads.Author{
+		ID:                   "foo",
+		Name:                 "Baz",
+		Link:                 "https://foo.com/author",
+		FansCount:            42,
+		AuthorFollowersCount: 50,
+		LargeImageURL:        "https://foo.com/large.png",
+		ImageURL:             "https://foo.com/image.png",
+		SmallImageURL:        "https://foo.com/small.png",
+		About:                "OK",
+		Influences:           "bcat",
+		WorksCount:           "12",
+		Gender:               "male",
+		Hometown:             "London",
+		BornAt:               "1945/12/03",
+		DiedAt:               "1994/03/14",
+		GoodreadsAuthor:      "baz",
+	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
 	request := fakeDoer.DoArgsForCall(0)
@@ -95,6 +112,20 @@ const authorShowResponseBody string = `
 		<author>
 			<id>foo</id>
 			<name>Baz</name>
+			<link>https://foo.com/author</link>
+			<fans_count>42</fans_count>
+			<author_followers_count>50</author_followers_count>
+			<large_image_url>https://foo.com/large.png</large_image_url>
+			<image_url>https://foo.com/image.png</image_url>
+			<small_image_url>https://foo.com/small.png</small_image_url>
+			<about>OK</about>
+			<influences>bcat</influences>
+			<works_count>12</works_count>
+			<gender>male</gender>
+			<hometown>London</hometown>
+			<born_at>1945/12/03</born_at>
+			<died_at>1994/03/14</died_at>
+			<goodreads_author>baz</goodreads_author>
 		</author>
 	</goodreads_response>
 `
