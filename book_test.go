@@ -11,12 +11,12 @@ import (
 	"github.com/BooleanCat/go-goodreads"
 	"github.com/BooleanCat/go-goodreads/assert"
 	"github.com/BooleanCat/go-goodreads/fakes"
-	"github.com/BooleanCat/go-goodreads/httpclient"
+	"github.com/BooleanCat/go-goodreads/httputils"
 )
 
 func ExampleClient_BookShow() {
 	client := goodreads.Client{
-		Client: httpclient.RateLimited(http.DefaultClient, ticker),
+		Client: httputils.DripLimit(http.DefaultClient, ticker),
 	}
 
 	book, err := client.BookShow("36402034")
