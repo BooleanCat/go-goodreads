@@ -89,6 +89,10 @@ func TestClient_BookShow(t *testing.T) {
 		Authors: goodreads.Authors{Authors: []goodreads.Author{
 			{Name: "bcat"},
 		}},
+		PopularShelves: goodreads.Shelves{Shelves: []goodreads.Shelf{
+			{Name: "foo", Count: "6"},
+			{Name: "bar", Count: "2"},
+		}},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
@@ -196,6 +200,10 @@ const bookShowResponseBody string = `
 					<name>bcat</name>
 				</author>
 			</authors>
+			<popular_shelves>
+				<shelf name="foo" count="6" />
+				<shelf name="bar" count="2" />
+			</popular_shelves>
 		</book>
 	</goodreads_response>
 `

@@ -34,6 +34,7 @@ type Book struct {
 	Link               string  `xml:"link"`
 	Work               Work    `xml:"work"`
 	Authors            Authors `xml:"authors"`
+	PopularShelves     Shelves `xml:"popular_shelves"`
 }
 
 type Books struct {
@@ -83,4 +84,13 @@ type Work struct {
 	DefaultChapteringBookID        int64  `xml:"default_chaptering_book_id"`
 	DefaultDescriptionLanguageCode string `xml:"default_description_language_code"`
 	WorkURI                        string `xml:"work_uri"`
+}
+
+type Shelf struct {
+	Name  string `xml:"name,attr"`
+	Count string `xml:"count,attr"`
+}
+
+type Shelves struct {
+	Shelves []Shelf `xml:"shelf"`
 }
