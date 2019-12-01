@@ -26,6 +26,10 @@ type Author struct {
 	Books                Books  `xml:"books"`
 }
 
+type Authors struct {
+	Authors []Author `xml:"author"`
+}
+
 func (client Client) AuthorShow(id string) (Author, error) {
 	type goodreadsResponse struct {
 		Author Author `xml:"author"`

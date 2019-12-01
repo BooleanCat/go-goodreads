@@ -86,6 +86,9 @@ func TestClient_BookShow(t *testing.T) {
 			DefaultDescriptionLanguageCode: "eng",
 			WorkURI:                        "https://foo.com",
 		},
+		Authors: goodreads.Authors{Authors: []goodreads.Author{
+			{Name: "bcat"},
+		}},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
@@ -188,6 +191,11 @@ const bookShowResponseBody string = `
 				<default_description_language_code>eng</default_description_language_code>
 				<work_uri>https://foo.com</work_uri>
 			</work>
+			<authors>
+				<author>
+					<name>bcat</name>
+				</author>
+			</authors>
 		</book>
 	</goodreads_response>
 `
