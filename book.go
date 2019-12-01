@@ -7,34 +7,38 @@ import (
 )
 
 type Book struct {
-	ID                 int      `xml:"id"`
-	Title              string   `xml:"title"`
-	ISBN               string   `xml:"isbn"`
-	ISBN13             string   `xml:"isbn13"`
-	ASIN               string   `xml:"asin"`
-	KindleASIN         string   `xml:"kindle_asin"`
-	MarketplaceID      string   `xml:"marketplace_id"`
-	CountryCode        string   `xml:"country_code"`
-	ImageURL           string   `xml:"image_url"`
-	SmallImageURL      string   `xml:"small_image_url"`
-	PublicationYear    int      `xml:"publication_year"`
-	PublicationMonth   int      `xml:"publication_month"`
-	PublicationDay     int      `xml:"publication_day"`
-	Publisher          string   `xml:"publisher"`
-	LanguageCode       string   `xml:"language_code"`
-	IsEbook            bool     `xml:"is_ebook"`
-	Description        string   `xml:"description"`
-	AverageRating      float32  `xml:"average_rating"`
-	NumPages           int      `xml:"num_pages"`
-	Format             string   `xml:"format"`
-	EditionInformation string   `xml:"edition_information"`
-	RatingsCount       int      `xml:"ratings_count"`
-	TextReviewsCount   int      `xml:"text_reviews_count"`
-	URL                string   `xml:"url"`
-	Link               string   `xml:"link"`
-	Work               Work     `xml:"work"`
-	Authors            []Author `xml:"authors>author"`
-	PopularShelves     []Shelf  `xml:"popular_shelves>shelf"`
+	ID                 int          `xml:"id"`
+	Title              string       `xml:"title"`
+	ISBN               string       `xml:"isbn"`
+	ISBN13             string       `xml:"isbn13"`
+	ASIN               string       `xml:"asin"`
+	KindleASIN         string       `xml:"kindle_asin"`
+	MarketplaceID      string       `xml:"marketplace_id"`
+	CountryCode        string       `xml:"country_code"`
+	ImageURL           string       `xml:"image_url"`
+	SmallImageURL      string       `xml:"small_image_url"`
+	PublicationYear    int          `xml:"publication_year"`
+	PublicationMonth   int          `xml:"publication_month"`
+	PublicationDay     int          `xml:"publication_day"`
+	Publisher          string       `xml:"publisher"`
+	LanguageCode       string       `xml:"language_code"`
+	IsEbook            bool         `xml:"is_ebook"`
+	Description        string       `xml:"description"`
+	AverageRating      float32      `xml:"average_rating"`
+	NumPages           int          `xml:"num_pages"`
+	Format             string       `xml:"format"`
+	EditionInformation string       `xml:"edition_information"`
+	RatingsCount       int          `xml:"ratings_count"`
+	TextReviewsCount   int          `xml:"text_reviews_count"`
+	URL                string       `xml:"url"`
+	Link               string       `xml:"link"`
+	Work               Work         `xml:"work"`
+	Authors            []Author     `xml:"authors>author"`
+	PopularShelves     []Shelf      `xml:"popular_shelves>shelf"`
+	BookLinks          []Link       `xml:"book_links>book_link"`
+	BuyLinks           []Link       `xml:"buy_links>buy_link"`
+	SeriesWorks        []SeriesWork `xml:"series_works>series_work"`
+	SimilarBooks       []Book       `xml:"similar_books>book"`
 }
 
 func (client Client) BookShow(id int) (Book, error) {
@@ -85,4 +89,26 @@ type Work struct {
 type Shelf struct {
 	Name  string `xml:"name,attr"`
 	Count string `xml:"count,attr"`
+}
+
+type Link struct {
+	ID   int    `xml:"id"`
+	Name string `xml:"name"`
+	Link string `xml:"link"`
+}
+
+type SeriesWork struct {
+	ID           int    `xml:"id"`
+	UserPosition int    `xml:"user_position"`
+	Series       Series `xml:"series"`
+}
+
+type Series struct {
+	ID               int    `xml:"id"`
+	Title            string `xml:"title"`
+	Description      string `xml:"description"`
+	Note             string `xml:"note"`
+	SeriesWorksCount int    `xml:"series_works_count"`
+	PrimaryWorkCount int    `xml:"primary_work_count"`
+	Numbered         bool   `xml:"numbered"`
 }

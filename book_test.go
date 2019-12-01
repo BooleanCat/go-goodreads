@@ -91,6 +91,20 @@ func TestClient_BookShow(t *testing.T) {
 			{Name: "foo", Count: "6"},
 			{Name: "bar", Count: "2"},
 		},
+		BookLinks: []goodreads.Link{{ID: 14, Name: "foo link", Link: "https://foo.com/link"}},
+		BuyLinks:  []goodreads.Link{{ID: 15, Name: "buy foo", Link: "https://foo.com/buy"}},
+		SeriesWorks: []goodreads.SeriesWork{
+			{ID: 17, UserPosition: 1, Series: goodreads.Series{
+				ID:               18,
+				Title:            "foo",
+				Description:      "foo series",
+				Note:             "It's OK.",
+				SeriesWorksCount: 2,
+				PrimaryWorkCount: 1,
+				Numbered:         true,
+			}},
+		},
+		SimilarBooks: []goodreads.Book{{Title: "Baz"}},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
@@ -200,6 +214,40 @@ const bookShowResponseBody string = `
 				<shelf name="foo" count="6" />
 				<shelf name="bar" count="2" />
 			</popular_shelves>
+			<book_links>
+				<book_link>
+					<id>14</id>
+					<name>foo link</name>
+					<link>https://foo.com/link</link>
+				</book_link>
+			</book_links>
+			<buy_links>
+				<buy_link>
+					<id>15</id>
+					<name>buy foo</name>
+					<link>https://foo.com/buy</link>
+				</buy_link>
+			</buy_links>
+			<series_works>
+				<series_work>
+					<id>17</id>
+					<user_position>1</user_position>
+					<series>
+						<id>18</id>
+						<title>foo</title>
+						<description>foo series</description>
+						<note><![CDATA[It's OK.]]></note>
+						<series_works_count>2</series_works_count>
+						<primary_work_count>1</primary_work_count>
+						<numbered>true</numbered>
+					</series>
+				</series_work>
+			</series_works>
+			<similar_books>
+				<book>
+					<title>Baz</title>
+				</book>
+			</similar_books>
 		</book>
 	</goodreads_response>
 `
