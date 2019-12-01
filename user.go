@@ -18,6 +18,9 @@ type User struct {
 	Gender        string `xml:"gender"`
 	Location      string `xml:"location"`
 	Website       string `xml:"website"`
+	Joined        string `xml:"joined"`
+	LastActive    string `xml:"last_active"`
+	Interests     string `xml:"interests"`
 }
 
 func (client Client) UserShow(id int) (User, error) {

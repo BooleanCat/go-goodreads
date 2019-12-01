@@ -54,6 +54,9 @@ func TestClient_UserShow(t *testing.T) {
 		Gender:        "male",
 		Location:      "London, The United Kingdom",
 		Website:       "https://foo.com",
+		Joined:        "08/2019",
+		LastActive:    "11/2019",
+		Interests:     "reading",
 	}
 	assert.Equal(t, user, want)
 
@@ -122,6 +125,9 @@ const userShowResponseBody string = `
 			<gender>male</gender>
 			<location>London, The United Kingdom</location>
 			<website>https://foo.com</website>
+			<joined>08/2019</joined>
+			<last_active>11/2019</last_active>
+			<interests>reading</interests>
 		</user>
 	</goodreads_response>
 `
