@@ -66,6 +66,26 @@ func TestClient_BookShow(t *testing.T) {
 		TextReviewsCount:   "42",
 		URL:                "https://foo.com/book",
 		Link:               "https://bar.com/book",
+		Work: goodreads.Work{
+			ID:                             42,
+			BooksCount:                     5,
+			BestBookID:                     765,
+			ReviewsCount:                   653,
+			RatingsSum:                     1000,
+			RatingsCount:                   400,
+			TextReviewsCount:               50,
+			OriginalPublicationYear:        2019,
+			OriginalPublicationMonth:       4,
+			OriginalPublicationDay:         30,
+			OriginalTitle:                  "Bar",
+			OriginalLanguageID:             0,
+			MediaType:                      "book",
+			RatingDist:                     "5:110406|4:126699|3:56731|2:10593|1:2539|total:306968",
+			DescUserID:                     788,
+			DefaultChapteringBookID:        14,
+			DefaultDescriptionLanguageCode: "eng",
+			WorkURI:                        "https://foo.com",
+		},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
@@ -148,6 +168,26 @@ const bookShowResponseBody string = `
 			<text_reviews_count>42</text_reviews_count>
 			<url>https://foo.com/book</url>
 			<link>https://bar.com/book</link>
+			<work>
+				<id>42</id>
+				<books_count>5</books_count>
+				<best_book_id>765</best_book_id>
+				<reviews_count>653</reviews_count>
+				<ratings_sum>1000</ratings_sum>
+				<ratings_count>400</ratings_count>
+				<text_reviews_count>50</text_reviews_count>
+				<original_publication_year>2019</original_publication_year>
+				<original_publication_month>4</original_publication_month>
+				<original_publication_day>30</original_publication_day>
+				<original_title>Bar</original_title>
+				<original_language_id />
+				<media_type>book</media_type>
+				<rating_dist>5:110406|4:126699|3:56731|2:10593|1:2539|total:306968</rating_dist>
+				<desc_user_id>788</desc_user_id>
+				<default_chaptering_book_id>14</default_chaptering_book_id>
+				<default_description_language_code>eng</default_description_language_code>
+				<work_uri>https://foo.com</work_uri>
+			</work>
 		</book>
 	</goodreads_response>
 `

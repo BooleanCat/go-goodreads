@@ -32,6 +32,7 @@ type Book struct {
 	TextReviewsCount   string `xml:"text_reviews_count"`
 	URL                string `xml:"url"`
 	Link               string `xml:"link"`
+	Work               Work   `xml:"work"`
 }
 
 type Books struct {
@@ -60,4 +61,25 @@ func (client Client) BookShow(id string) (Book, error) {
 	}
 
 	return book.Book, nil
+}
+
+type Work struct {
+	ID                             int64  `xml:"id"`
+	BooksCount                     int64  `xml:"books_count"`
+	BestBookID                     int64  `xml:"best_book_id"`
+	ReviewsCount                   int64  `xml:"reviews_count"`
+	RatingsSum                     int64  `xml:"ratings_sum"`
+	RatingsCount                   int64  `xml:"ratings_count"`
+	TextReviewsCount               int64  `xml:"text_reviews_count"`
+	OriginalPublicationYear        int64  `xml:"original_publication_year"`
+	OriginalPublicationMonth       int64  `xml:"original_publication_month"`
+	OriginalPublicationDay         int64  `xml:"original_publication_day"`
+	OriginalTitle                  string `xml:"original_title"`
+	OriginalLanguageID             int64  `xml:"original_language_id"`
+	MediaType                      string `xml:"media_type"`
+	RatingDist                     string `xml:"rating_dist"`
+	DescUserID                     int64  `xml:"desc_user_id"`
+	DefaultChapteringBookID        int64  `xml:"default_chaptering_book_id"`
+	DefaultDescriptionLanguageCode string `xml:"default_description_language_code"`
+	WorkURI                        string `xml:"work_uri"`
 }
