@@ -19,7 +19,7 @@ func ExampleClient_UserShow() {
 		Client: httputils.DripLimit(http.DefaultClient, ticker),
 	}
 
-	user, err := client.UserShow("101333864")
+	user, err := client.UserShow(101333864)
 	if err != nil {
 		panic(err)
 	}
@@ -39,11 +39,11 @@ func TestClient_UserShow(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	user, err := client.UserShow("foo")
+	user, err := client.UserShow(213)
 	assert.Nil(t, err)
 
 	want := goodreads.User{
-		ID:            "foo",
+		ID:            213,
 		Name:          "Foo Bar",
 		UserName:      "fbar",
 		Link:          "https://foo.com/fbar",
@@ -60,21 +60,18 @@ func TestClient_UserShow(t *testing.T) {
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
 	request := fakeDoer.DoArgsForCall(0)
 	assert.Equal(t, request.Method, http.MethodGet)
-	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/user/show/foo.xml?key=key")
+	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/user/show/213.xml?key=key")
 }
 
 func TestClient_UserShow_CreateRequestFails(t *testing.T) {
-	responseBody := bytes.NewBufferString(userShowResponseBody)
-
 	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(&http.Response{
-		Body:       ioutil.NopCloser(responseBody),
-		StatusCode: http.StatusOK,
-	}, nil)
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+	newRequest := new(fakes.FakeNewRequestFunc)
+	newRequest.Returns(nil, errors.New("oops"))
 
-	_, err := client.UserShow("%%%%%%")
-	assert.ErrorMatches(t, err, `^create request: `)
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}.WithNewRequest(newRequest.Spy)
+
+	_, err := client.UserShow(213)
+	assert.ErrorMatches(t, err, `^create request: oops$`)
 	assert.Equal(t, fakeDoer.DoCallCount(), 0)
 }
 
@@ -83,7 +80,7 @@ func TestClient_UserShow_DoRequestFails(t *testing.T) {
 	fakeDoer.DoReturns(nil, errors.New("oops"))
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	_, err := client.UserShow("foo")
+	_, err := client.UserShow(213)
 	assert.ErrorMatches(t, err, `^do request: oops$`)
 }
 
@@ -95,7 +92,7 @@ func TestClient_UserShow_InvalidStatusCode(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	_, err := client.UserShow("foo")
+	_, err := client.UserShow(213)
 	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
@@ -107,14 +104,14 @@ func TestClient_UserShow_DecodeFails(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	_, err := client.UserShow("foo")
+	_, err := client.UserShow(213)
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 
 const userShowResponseBody string = `
 	<goodreads_response>
 		<user>
-			<id>foo</id>
+			<id>213</id>
 			<name>Foo Bar</name>
 			<user_name>fbar</user_name>
 			<link><![CDATA[https://foo.com/fbar]]></link>

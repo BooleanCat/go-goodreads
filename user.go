@@ -7,7 +7,7 @@ import (
 )
 
 type User struct {
-	ID            string `xml:"id"`
+	ID            int    `xml:"id"`
 	Name          string `xml:"name"`
 	UserName      string `xml:"user_name"`
 	Link          string `xml:"link"`
@@ -20,12 +20,12 @@ type User struct {
 	Website       string `xml:"website"`
 }
 
-func (client Client) UserShow(id string) (User, error) {
+func (client Client) UserShow(id int) (User, error) {
 	type goodreadsResponse struct {
 		User User `xml:"user"`
 	}
 
-	url := fmt.Sprintf("%s/user/show/%s.xml", goodreadsURL, id)
+	url := fmt.Sprintf("%s/user/show/%d.xml", goodreadsURL, id)
 	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return User{}, err

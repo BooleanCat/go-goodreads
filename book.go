@@ -7,7 +7,7 @@ import (
 )
 
 type Book struct {
-	ID                 string   `xml:"id"`
+	ID                 int      `xml:"id"`
 	Title              string   `xml:"title"`
 	ISBN               string   `xml:"isbn"`
 	ISBN13             string   `xml:"isbn13"`
@@ -17,19 +17,19 @@ type Book struct {
 	CountryCode        string   `xml:"country_code"`
 	ImageURL           string   `xml:"image_url"`
 	SmallImageURL      string   `xml:"small_image_url"`
-	PublicationYear    string   `xml:"publication_year"`
-	PublicationMonth   string   `xml:"publication_month"`
-	PublicationDay     string   `xml:"publication_day"`
+	PublicationYear    int      `xml:"publication_year"`
+	PublicationMonth   int      `xml:"publication_month"`
+	PublicationDay     int      `xml:"publication_day"`
 	Publisher          string   `xml:"publisher"`
 	LanguageCode       string   `xml:"language_code"`
-	IsEbook            string   `xml:"is_ebook"`
+	IsEbook            bool     `xml:"is_ebook"`
 	Description        string   `xml:"description"`
-	AverageRating      string   `xml:"average_rating"`
-	NumPages           string   `xml:"num_pages"`
+	AverageRating      float32  `xml:"average_rating"`
+	NumPages           int      `xml:"num_pages"`
 	Format             string   `xml:"format"`
 	EditionInformation string   `xml:"edition_information"`
-	RatingsCount       string   `xml:"ratings_count"`
-	TextReviewsCount   string   `xml:"text_reviews_count"`
+	RatingsCount       int      `xml:"ratings_count"`
+	TextReviewsCount   int      `xml:"text_reviews_count"`
 	URL                string   `xml:"url"`
 	Link               string   `xml:"link"`
 	Work               Work     `xml:"work"`
@@ -37,12 +37,12 @@ type Book struct {
 	PopularShelves     []Shelf  `xml:"popular_shelves>shelf"`
 }
 
-func (client Client) BookShow(id string) (Book, error) {
+func (client Client) BookShow(id int) (Book, error) {
 	type goodreadsResponse struct {
 		Book Book `xml:"book"`
 	}
 
-	url := fmt.Sprintf("%s/book/show/%s.xml", goodreadsURL, id)
+	url := fmt.Sprintf("%s/book/show/%d.xml", goodreadsURL, id)
 	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return Book{}, err

@@ -19,7 +19,7 @@ func ExampleClient_BookShow() {
 		Client: httputils.DripLimit(http.DefaultClient, ticker),
 	}
 
-	book, err := client.BookShow("36402034")
+	book, err := client.BookShow(36402034)
 	if err != nil {
 		panic(err)
 	}
@@ -38,10 +38,10 @@ func TestClient_BookShow(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	book, err := client.BookShow("foo")
+	book, err := client.BookShow(123)
 	assert.Nil(t, err)
 	assert.Equal(t, book, goodreads.Book{
-		ID:                 "foo",
+		ID:                 123,
 		Title:              "baz bar",
 		ISBN:               "isbn",
 		ISBN13:             "isbn13",
@@ -51,19 +51,19 @@ func TestClient_BookShow(t *testing.T) {
 		CountryCode:        "GB",
 		ImageURL:           "https://foo.com/bar.png",
 		SmallImageURL:      "https://foo.com/baz.png",
-		PublicationYear:    "2019",
-		PublicationMonth:   "2",
-		PublicationDay:     "22",
+		PublicationYear:    2019,
+		PublicationMonth:   2,
+		PublicationDay:     22,
 		Publisher:          "bcat",
 		LanguageCode:       "eng",
-		IsEbook:            "true",
+		IsEbook:            true,
 		Description:        "What a book.",
-		AverageRating:      "4.09",
-		NumPages:           "201",
+		AverageRating:      4.09,
+		NumPages:           201,
 		Format:             "Kindle",
 		EditionInformation: "Best edition",
-		RatingsCount:       "98",
-		TextReviewsCount:   "42",
+		RatingsCount:       98,
+		TextReviewsCount:   42,
 		URL:                "https://foo.com/book",
 		Link:               "https://bar.com/book",
 		Work: goodreads.Work{
@@ -96,19 +96,17 @@ func TestClient_BookShow(t *testing.T) {
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
 	request := fakeDoer.DoArgsForCall(0)
 	assert.Equal(t, request.Method, http.MethodGet)
-	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/book/show/foo.xml?key=key")
+	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/book/show/123.xml?key=key")
 }
 
 func TestClient_BookShow_CreateRequestFails(t *testing.T) {
 	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(&http.Response{
-		Body:       ioutil.NopCloser(new(bytes.Buffer)),
-		StatusCode: http.StatusOK,
-	}, nil)
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+	newRequest := new(fakes.FakeNewRequestFunc)
+	newRequest.Returns(nil, errors.New("oops"))
+	client := goodreads.Client{Client: fakeDoer, Key: "key"}.WithNewRequest(newRequest.Spy)
 
-	_, err := client.BookShow("%%%%%%")
-	assert.ErrorMatches(t, err, `^create request: `)
+	_, err := client.BookShow(123)
+	assert.ErrorMatches(t, err, `^create request: oops$`)
 	assert.Equal(t, fakeDoer.DoCallCount(), 0)
 }
 
@@ -117,7 +115,7 @@ func TestClient_BookShow_DoRequestFails(t *testing.T) {
 	fakeDoer.DoReturns(nil, errors.New("oops"))
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	_, err := client.BookShow("foo")
+	_, err := client.BookShow(123)
 	assert.ErrorMatches(t, err, `^do request: oops$`)
 }
 
@@ -129,7 +127,7 @@ func TestClient_BookShow_InvalidStatusCode(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	_, err := client.BookShow("foo")
+	_, err := client.BookShow(123)
 	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
@@ -141,14 +139,14 @@ func TestClient_BookShow_DecodeFails(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: fakeDoer, Key: "key"}
 
-	_, err := client.BookShow("foo")
+	_, err := client.BookShow(123)
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 
 const bookShowResponseBody string = `
 	<goodreads_response>
 		<book>
-			<id>foo</id>
+			<id>123</id>
 			<title>baz bar</title>
 			<isbn>isbn</isbn>
 			<isbn13>isbn13</isbn13>
