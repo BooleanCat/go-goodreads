@@ -57,9 +57,7 @@ func TestClient_AuthorShow(t *testing.T) {
 		BornAt:               "1945/12/03",
 		DiedAt:               "1994/03/14",
 		GoodreadsAuthor:      "baz",
-		Books: goodreads.Books{Books: []goodreads.Book{
-			{Title: "Mediocre Book"},
-		}},
+		Books:                []goodreads.Book{{Title: "Mediocre Book"}},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)

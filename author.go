@@ -23,11 +23,7 @@ type Author struct {
 	BornAt               string `xml:"born_at"`
 	DiedAt               string `xml:"died_at"`
 	GoodreadsAuthor      string `xml:"goodreads_author"`
-	Books                Books  `xml:"books"`
-}
-
-type Authors struct {
-	Authors []Author `xml:"author"`
+	Books                []Book `xml:"books>book"`
 }
 
 func (client Client) AuthorShow(id string) (Author, error) {

@@ -86,13 +86,11 @@ func TestClient_BookShow(t *testing.T) {
 			DefaultDescriptionLanguageCode: "eng",
 			WorkURI:                        "https://foo.com",
 		},
-		Authors: goodreads.Authors{Authors: []goodreads.Author{
-			{Name: "bcat"},
-		}},
-		PopularShelves: goodreads.Shelves{Shelves: []goodreads.Shelf{
+		Authors: []goodreads.Author{{Name: "bcat"}},
+		PopularShelves: []goodreads.Shelf{
 			{Name: "foo", Count: "6"},
 			{Name: "bar", Count: "2"},
-		}},
+		},
 	})
 
 	assert.Equal(t, fakeDoer.DoCallCount(), 1)
