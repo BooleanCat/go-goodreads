@@ -10,6 +10,7 @@ import (
 
 type Client struct {
 	Client *http.Client
+	URL    string
 	Key    string
 	Secret string
 
@@ -53,7 +54,7 @@ func (client Client) goodreadsKey() (string, error) {
 	return "", errors.New("goodreads API key not set")
 }
 
-const goodreadsURL = "https://www.goodreads.com"
+const defaultGoodreadsURL = "https://www.goodreads.com"
 
 type newRequestFunc func(string, string, io.Reader) (*http.Request, error)
 
@@ -88,6 +89,13 @@ func (client Client) getClient() *http.Client {
 	return client.Client
 }
 
+func (client Client) getURL() string {
+	if client.URL == "" {
+		return defaultGoodreadsURL
+	}
+
+	return client.URL
+}
+
 //go:generate counterfeiter --generate
 //counterfeiter:generate -o fakes/roundtripper.go net/http.RoundTripper
-//counterfeiter:generate -o fakes/request.go . newRequestFunc

@@ -67,12 +67,10 @@ func TestClient_AuthorShow(t *testing.T) {
 
 func TestClient_AuthorShow_CreateRequestFails(t *testing.T) {
 	transport := new(fakes.FakeRoundTripper)
-	newRequest := new(fakes.FakeNewRequestFunc)
-	newRequest.Returns(nil, errors.New("oops"))
-	client := goodreads.Client{Client: nil, Key: "key"}.WithNewRequest(newRequest.Spy)
+	client := goodreads.Client{Client: nil, Key: "key", URL: "%%%"}
 
 	_, err := client.AuthorShow(123)
-	assert.ErrorMatches(t, err, `^create request: oops$`)
+	assert.ErrorMatches(t, err, `^create request: `)
 	assert.Equal(t, transport.RoundTripCallCount(), 0)
 }
 

@@ -46,7 +46,7 @@ func (client Client) BookShow(id int) (Book, error) {
 		Book Book `xml:"book"`
 	}
 
-	url := fmt.Sprintf("%s/book/show/%d.xml", goodreadsURL, id)
+	url := fmt.Sprintf("%s/book/show/%d.xml", client.getURL(), id)
 	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return Book{}, err

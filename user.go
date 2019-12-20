@@ -28,7 +28,7 @@ func (client Client) UserShow(id int) (User, error) {
 		User User `xml:"user"`
 	}
 
-	url := fmt.Sprintf("%s/user/show/%d.xml", goodreadsURL, id)
+	url := fmt.Sprintf("%s/user/show/%d.xml", client.getURL(), id)
 	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return User{}, err

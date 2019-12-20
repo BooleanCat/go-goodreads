@@ -31,7 +31,7 @@ func (client Client) AuthorShow(id int) (Author, error) {
 		Author Author `xml:"author"`
 	}
 
-	url := fmt.Sprintf("%s/author/show/%d.xml", goodreadsURL, id)
+	url := fmt.Sprintf("%s/author/show/%d.xml", client.getURL(), id)
 	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return Author{}, err
