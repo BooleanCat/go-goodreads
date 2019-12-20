@@ -15,9 +15,8 @@ import (
 )
 
 func ExampleClient_UserShow() {
-	client := goodreads.Client{
-		Client: httputils.DripLimit(http.DefaultClient, ticker),
-	}
+	transport := httputils.DripLimit(http.DefaultTransport, ticker)
+	client := goodreads.Client{Client: &http.Client{Transport: transport}}
 
 	user, err := client.UserShow(101333864)
 	if err != nil {
@@ -32,12 +31,12 @@ func ExampleClient_UserShow() {
 func TestClient_UserShow(t *testing.T) {
 	responseBody := bytes.NewBufferString(userShowResponseBody)
 
-	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(&http.Response{
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(&http.Response{
 		Body:       ioutil.NopCloser(responseBody),
 		StatusCode: http.StatusOK,
 	}, nil)
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	user, err := client.UserShow(213)
 	assert.Nil(t, err)
@@ -60,52 +59,52 @@ func TestClient_UserShow(t *testing.T) {
 	}
 	assert.Equal(t, user, want)
 
-	assert.Equal(t, fakeDoer.DoCallCount(), 1)
-	request := fakeDoer.DoArgsForCall(0)
+	assert.Equal(t, transport.RoundTripCallCount(), 1)
+	request := transport.RoundTripArgsForCall(0)
 	assert.Equal(t, request.Method, http.MethodGet)
 	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/user/show/213.xml?key=key")
 }
 
 func TestClient_UserShow_CreateRequestFails(t *testing.T) {
-	fakeDoer := new(fakes.FakeDoer)
+	transport := new(fakes.FakeRoundTripper)
 	newRequest := new(fakes.FakeNewRequestFunc)
 	newRequest.Returns(nil, errors.New("oops"))
 
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}.WithNewRequest(newRequest.Spy)
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}.WithNewRequest(newRequest.Spy)
 
 	_, err := client.UserShow(213)
 	assert.ErrorMatches(t, err, `^create request: oops$`)
-	assert.Equal(t, fakeDoer.DoCallCount(), 0)
+	assert.Equal(t, transport.RoundTripCallCount(), 0)
 }
 
 func TestClient_UserShow_DoRequestFails(t *testing.T) {
-	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(nil, errors.New("oops"))
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(nil, errors.New("oops"))
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.UserShow(213)
-	assert.ErrorMatches(t, err, `^do request: oops$`)
+	assert.ErrorMatches(t, err, `^do request: .*oops$`)
 }
 
 func TestClient_UserShow_InvalidStatusCode(t *testing.T) {
-	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(&http.Response{
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(&http.Response{
 		Body:       ioutil.NopCloser(new(bytes.Buffer)),
 		StatusCode: http.StatusMethodNotAllowed,
 	}, nil)
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.UserShow(213)
 	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
 func TestClient_UserShow_DecodeFails(t *testing.T) {
-	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(&http.Response{
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(&http.Response{
 		Body:       ioutil.NopCloser(new(bytes.Buffer)),
 		StatusCode: http.StatusOK,
 	}, nil)
-	client := goodreads.Client{Client: fakeDoer, Key: "key"}
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.UserShow(213)
 	assert.ErrorMatches(t, err, `^decode response: `)

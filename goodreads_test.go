@@ -24,5 +24,4 @@ func TestClient_String(t *testing.T) {
 	client := goodreads.Client{Key: "foo", Secret: "bar"}
 	assert.DoesNotContainSubstring(t, fmt.Sprint(client), "foo")
 	assert.DoesNotContainSubstring(t, fmt.Sprint(client), "bar")
-	assert.Equal(t, fmt.Sprint(client), "{<nil>}")
 }

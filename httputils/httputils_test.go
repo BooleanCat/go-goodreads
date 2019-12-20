@@ -12,25 +12,25 @@ import (
 )
 
 func TestDripLimit(t *testing.T) {
-	fakeDoer := new(fakes.FakeDoer)
+	transport := new(fakes.FakeRoundTripper)
 
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
-	client := httputils.DripLimit(fakeDoer, ticker)
+	client := httputils.DripLimit(transport, ticker)
 
-	_, err := client.Do(new(http.Request))
+	_, err := client.RoundTrip(new(http.Request))
 	assert.Nil(t, err)
-	assert.Equal(t, fakeDoer.DoCallCount(), 1)
+	assert.Equal(t, transport.RoundTripCallCount(), 1)
 }
 
 func TestDripLimit_DelegateDoFails(t *testing.T) {
-	fakeDoer := new(fakes.FakeDoer)
-	fakeDoer.DoReturns(nil, errors.New("oops"))
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(nil, errors.New("oops"))
 
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
-	client := httputils.DripLimit(fakeDoer, ticker)
+	client := httputils.DripLimit(transport, ticker)
 
-	_, err := client.Do(new(http.Request))
+	_, err := client.RoundTrip(new(http.Request))
 	assert.ErrorMatches(t, err, `oops`)
 }

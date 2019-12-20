@@ -9,7 +9,7 @@ import (
 )
 
 type Client struct {
-	Client doer
+	Client *http.Client
 	Key    string
 	Secret string
 
@@ -55,10 +55,6 @@ func (client Client) goodreadsKey() (string, error) {
 
 const goodreadsURL = "https://www.goodreads.com"
 
-type doer interface {
-	Do(*http.Request) (*http.Response, error)
-}
-
 type newRequestFunc func(string, string, io.Reader) (*http.Request, error)
 
 func closeIgnoreError(c io.Closer) {
@@ -76,7 +72,7 @@ func (client Client) doNewRequestWithKey(method, url string, body io.Reader) (*h
 		return nil, err
 	}
 
-	response, err := client.Client.Do(request)
+	response, err := client.getClient().Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
@@ -84,6 +80,14 @@ func (client Client) doNewRequestWithKey(method, url string, body io.Reader) (*h
 	return response, nil
 }
 
+func (client Client) getClient() *http.Client {
+	if client.Client == nil {
+		return http.DefaultClient
+	}
+
+	return client.Client
+}
+
 //go:generate counterfeiter --generate
-//counterfeiter:generate -o fakes/doer.go . doer
+//counterfeiter:generate -o fakes/roundtripper.go net/http.RoundTripper
 //counterfeiter:generate -o fakes/request.go . newRequestFunc

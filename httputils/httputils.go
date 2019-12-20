@@ -5,25 +5,21 @@ import (
 	"time"
 )
 
-type doer interface {
-	Do(r *http.Request) (*http.Response, error)
-}
-
-type DripLimitClient struct {
-	delegate doer
+type DripLimitTransport struct {
+	delegate http.RoundTripper
 	ticker   *time.Ticker
 }
 
-func DripLimit(delegate doer, ticker *time.Ticker) DripLimitClient {
-	return DripLimitClient{
+func DripLimit(delegate http.RoundTripper, ticker *time.Ticker) DripLimitTransport {
+	return DripLimitTransport{
 		delegate: delegate,
 		ticker:   ticker,
 	}
 }
 
-func (client DripLimitClient) Do(request *http.Request) (*http.Response, error) {
+func (client DripLimitTransport) RoundTrip(request *http.Request) (*http.Response, error) {
 	<-client.ticker.C
-	return client.delegate.Do(request)
+	return client.delegate.RoundTrip(request)
 }
 
-var _ doer = DripLimitClient{}
+var _ http.RoundTripper = DripLimitTransport{}
