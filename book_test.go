@@ -18,7 +18,7 @@ func ExampleClient_BookShow() {
 	transport := httputils.DripLimit(http.DefaultTransport, ticker)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}}
 
-	book, err := client.BookShow(36402034)
+	book, err := client.BookShow(36402034, goodreads.BookShowOptions.TextOnly)
 	if err != nil {
 		panic(err)
 	}
@@ -110,6 +110,23 @@ func TestClient_BookShow(t *testing.T) {
 	request := transport.RoundTripArgsForCall(0)
 	assert.Equal(t, request.Method, http.MethodGet)
 	assert.Equal(t, request.URL.String(), "https://www.goodreads.com/book/show/123.xml?key=key")
+}
+
+func TestClient_BookShow_OptionalParams(t *testing.T) {
+	responseBody := bytes.NewBufferString(bookShowResponseBody)
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(&http.Response{
+		Body:       ioutil.NopCloser(responseBody),
+		StatusCode: http.StatusOK,
+	}, nil)
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
+
+	_, err := client.BookShow(123, goodreads.BookShowOptions.TextOnly, goodreads.BookShowOptions.Rating(3.456))
+	assert.Nil(t, err)
+
+	assert.Equal(t, transport.RoundTripCallCount(), 1)
+	request := transport.RoundTripArgsForCall(0)
+	assert.EndsWith(t, request.URL.String(), "key=key&rating=3.46&text_only=true")
 }
 
 func TestClient_BookShow_CreateRequestFails(t *testing.T) {

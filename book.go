@@ -4,8 +4,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
+// A Book contains information about a book as defined by Goodreads.
 type Book struct {
 	ID                 int          `xml:"id"`
 	Title              string       `xml:"title"`
@@ -41,30 +43,7 @@ type Book struct {
 	SimilarBooks       []Book       `xml:"similar_books>book"`
 }
 
-func (client Client) BookShow(id int) (Book, error) {
-	type goodreadsResponse struct {
-		Book Book `xml:"book"`
-	}
-
-	url := fmt.Sprintf("%s/book/show/%d.xml", client.getURL(), id)
-	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
-	if err != nil {
-		return Book{}, err
-	}
-	defer closeIgnoreError(response.Body)
-
-	if response.StatusCode != http.StatusOK {
-		return Book{}, fmt.Errorf(`unexpected status code "%d"`, response.StatusCode)
-	}
-
-	var book goodreadsResponse
-	if err := xml.NewDecoder(response.Body).Decode(&book); err != nil {
-		return Book{}, fmt.Errorf("decode response: %w", err)
-	}
-
-	return book.Book, nil
-}
-
+// A Work contains information about a work as defined by Goodreads.
 type Work struct {
 	ID                             int64  `xml:"id"`
 	BooksCount                     int64  `xml:"books_count"`
@@ -86,23 +65,27 @@ type Work struct {
 	WorkURI                        string `xml:"work_uri"`
 }
 
+// A Shelf contains information about a shelf as defined by Goodreads.
 type Shelf struct {
 	Name  string `xml:"name,attr"`
 	Count string `xml:"count,attr"`
 }
 
+// A Link contains information about a link as defined by Goodreads.
 type Link struct {
 	ID   int    `xml:"id"`
 	Name string `xml:"name"`
 	Link string `xml:"link"`
 }
 
+// A SeriesWork contains information about a series work as defined by Goodreads.
 type SeriesWork struct {
 	ID           int    `xml:"id"`
 	UserPosition int    `xml:"user_position"`
 	Series       Series `xml:"series"`
 }
 
+// A Series contains information about a series as defined by Goodreads.
 type Series struct {
 	ID               int    `xml:"id"`
 	Title            string `xml:"title"`
@@ -112,3 +95,58 @@ type Series struct {
 	PrimaryWorkCount int    `xml:"primary_work_count"`
 	Numbered         bool   `xml:"numbered"`
 }
+
+// BookShow returns book information given a Goodreads book ID. Optional
+// parameters from BookShowOptions may be provided.
+func (client Client) BookShow(id int, options ...option) (Book, error) {
+	type goodreadsResponse struct {
+		Book Book `xml:"book"`
+	}
+
+	url := fmt.Sprintf("%s/book/show/%d.xml", client.getURL(), id)
+	request, err := client.newRequestWithKey(http.MethodGet, url, nil)
+	if err != nil {
+		return Book{}, err
+	}
+
+	response, err := client.getClient().Do(setOptions(request, options...))
+	if err != nil {
+		return Book{}, fmt.Errorf("do request: %w", err)
+	}
+	defer closeIgnoreError(response.Body)
+
+	if response.StatusCode != http.StatusOK {
+		return Book{}, fmt.Errorf(`unexpected status code "%d"`, response.StatusCode)
+	}
+
+	var book goodreadsResponse
+	if err := xml.NewDecoder(response.Body).Decode(&book); err != nil {
+		return Book{}, fmt.Errorf("decode response: %w", err)
+	}
+
+	return book.Book, nil
+}
+
+// BookShowOptions contains methods that may be provided to BookShow as
+// options.
+//
+// Provided options are:
+// 1. TextOnly
+//
+// See Goodreads API documentation for information on how this options change
+// the response data.
+var BookShowOptions = bookShowOptionsDef{}
+
+func (o bookShowOptionsDef) TextOnly(values url.Values) url.Values {
+	values.Set("text_only", "true")
+	return values
+}
+
+func (o bookShowOptionsDef) Rating(r float32) func(url.Values) url.Values {
+	return func(values url.Values) url.Values {
+		values.Set("rating", fmt.Sprintf("%.2f", r))
+		return values
+	}
+}
+
+type bookShowOptionsDef struct{}

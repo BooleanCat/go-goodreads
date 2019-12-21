@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// An Author contains information about an author as defined by Goodreads.
 type Author struct {
 	ID                   int    `xml:"id"`
 	Name                 string `xml:"name"`
@@ -26,15 +27,21 @@ type Author struct {
 	Books                []Book `xml:"books>book"`
 }
 
+// AuthorShow returns author information given a Goodreads author ID.
 func (client Client) AuthorShow(id int) (Author, error) {
 	type goodreadsResponse struct {
 		Author Author `xml:"author"`
 	}
 
 	url := fmt.Sprintf("%s/author/show/%d.xml", client.getURL(), id)
-	response, err := client.doNewRequestWithKey(http.MethodGet, url, nil)
+	request, err := client.newRequestWithKey(http.MethodGet, url, nil)
 	if err != nil {
 		return Author{}, err
+	}
+
+	response, err := client.getClient().Do(request)
+	if err != nil {
+		return Author{}, fmt.Errorf("do request: %w", err)
 	}
 	defer closeIgnoreError(response.Body)
 

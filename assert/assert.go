@@ -19,6 +19,12 @@ func Equal(t *testing.T, v, w interface{}) {
 	}
 }
 
+func EndsWith(t *testing.T, s, u string) {
+	if !strings.HasSuffix(s, u) {
+		t.Fatalf(`expected "%s" to end with "%s"`, s, u)
+	}
+}
+
 func ErrorMatches(t *testing.T, err error, pattern string) {
 	if err == nil {
 		t.Fatal("expected err to have occurred")
