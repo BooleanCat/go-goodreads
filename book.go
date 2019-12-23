@@ -96,7 +96,7 @@ type Series struct {
 	Numbered         bool   `xml:"numbered"`
 }
 
-// BookShow returns book information given a Goodreads book ID. Optional
+// BookShow fetches reviews for a book given a Goodreads book ID. Optional
 // parameters from BookShowOptions may be provided.
 func (client Client) BookShow(id int, options ...option) (Book, error) {
 	type goodreadsResponse struct {
@@ -132,14 +132,17 @@ func (client Client) BookShow(id int, options ...option) (Book, error) {
 //
 // Provided options are:
 // 1. TextOnly
+// 2. Rating
 //
-// See Goodreads API documentation for information on how this options change
-// the response data.
+// See Goodreads API documentation for information on how options change the
+// response data.
 var BookShowOptions = bookShowOptionsDef{}
 
-func (o bookShowOptionsDef) TextOnly(values url.Values) url.Values {
-	values.Set("text_only", "true")
-	return values
+func (o bookShowOptionsDef) TextOnly() func(url.Values) url.Values {
+	return func(values url.Values) url.Values {
+		values.Set("text_only", "true")
+		return values
+	}
 }
 
 func (o bookShowOptionsDef) Rating(r float32) func(url.Values) url.Values {
