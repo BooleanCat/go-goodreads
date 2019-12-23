@@ -1,6 +1,7 @@
 package goodreads
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 	"net/http"
@@ -25,13 +26,13 @@ type User struct {
 }
 
 // UserShow returns user information given a Goodreads user ID.
-func (client Client) UserShow(id int) (User, error) {
+func (client Client) UserShow(ctx context.Context, id int) (User, error) {
 	type goodreadsResponse struct {
 		User User `xml:"user"`
 	}
 
 	url := fmt.Sprintf("%s/user/show/%d.xml", client.getURL(), id)
-	request, err := client.newRequestWithKey(http.MethodGet, url, nil)
+	request, err := client.newRequestWithKey(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return User{}, err
 	}

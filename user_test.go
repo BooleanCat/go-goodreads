@@ -2,6 +2,7 @@ package goodreads_test
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -18,7 +19,7 @@ func ExampleClient_UserShow() {
 	transport := httputils.DripLimit(http.DefaultTransport, ticker)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}}
 
-	user, err := client.UserShow(101333864)
+	user, err := client.UserShow(context.Background(), 101333864)
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +39,7 @@ func TestClient_UserShow(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	user, err := client.UserShow(213)
+	user, err := client.UserShow(context.Background(), 213)
 	assert.Nil(t, err)
 
 	want := goodreads.User{
@@ -70,7 +71,7 @@ func TestClient_UserShow_CreateRequestFails(t *testing.T) {
 
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key", URL: "%%%"}
 
-	_, err := client.UserShow(213)
+	_, err := client.UserShow(context.Background(), 213)
 	assert.ErrorMatches(t, err, `^create request: `)
 	assert.Equal(t, transport.RoundTripCallCount(), 0)
 }
@@ -80,7 +81,7 @@ func TestClient_UserShow_DoRequestFails(t *testing.T) {
 	transport.RoundTripReturns(nil, errors.New("oops"))
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.UserShow(213)
+	_, err := client.UserShow(context.Background(), 213)
 	assert.ErrorMatches(t, err, `^do request: .*oops$`)
 }
 
@@ -92,7 +93,7 @@ func TestClient_UserShow_InvalidStatusCode(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.UserShow(213)
+	_, err := client.UserShow(context.Background(), 213)
 	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
@@ -104,7 +105,7 @@ func TestClient_UserShow_DecodeFails(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.UserShow(213)
+	_, err := client.UserShow(context.Background(), 213)
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 

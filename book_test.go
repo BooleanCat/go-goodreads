@@ -2,6 +2,7 @@ package goodreads_test
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -18,7 +19,7 @@ func ExampleClient_BookShow() {
 	transport := httputils.DripLimit(http.DefaultTransport, ticker)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}}
 
-	book, err := client.BookShow(36402034, goodreads.BookShowOptions.TextOnly())
+	book, err := client.BookShow(context.Background(), 36402034, goodreads.BookShowOptions.TextOnly())
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +38,7 @@ func TestClient_BookShow(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	book, err := client.BookShow(123)
+	book, err := client.BookShow(context.Background(), 123)
 	assert.Nil(t, err)
 	assert.Equal(t, book, goodreads.Book{
 		ID:                 123,
@@ -121,7 +122,7 @@ func TestClient_BookShow_OptionalParams(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.BookShow(123, goodreads.BookShowOptions.TextOnly(), goodreads.BookShowOptions.Rating(3.456))
+	_, err := client.BookShow(context.Background(), 123, goodreads.BookShowOptions.TextOnly(), goodreads.BookShowOptions.Rating(3.456))
 	assert.Nil(t, err)
 
 	assert.Equal(t, transport.RoundTripCallCount(), 1)
@@ -133,7 +134,7 @@ func TestClient_BookShow_CreateRequestFails(t *testing.T) {
 	transport := new(fakes.FakeRoundTripper)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key", URL: "%%%"}
 
-	_, err := client.BookShow(123)
+	_, err := client.BookShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^create request: `)
 	assert.Equal(t, transport.RoundTripCallCount(), 0)
 }
@@ -143,7 +144,7 @@ func TestClient_BookShow_DoRequestFails(t *testing.T) {
 	transport.RoundTripReturns(nil, errors.New("oops"))
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.BookShow(123)
+	_, err := client.BookShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^do request: .*oops$`)
 }
 
@@ -155,7 +156,7 @@ func TestClient_BookShow_InvalidStatusCode(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.BookShow(123)
+	_, err := client.BookShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
@@ -167,7 +168,7 @@ func TestClient_BookShow_DecodeFails(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.BookShow(123)
+	_, err := client.BookShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 

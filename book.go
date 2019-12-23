@@ -1,6 +1,7 @@
 package goodreads
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 	"net/http"
@@ -98,13 +99,13 @@ type Series struct {
 
 // BookShow fetches reviews for a book given a Goodreads book ID. Optional
 // parameters from BookShowOptions may be provided.
-func (client Client) BookShow(id int, options ...option) (Book, error) {
+func (client Client) BookShow(ctx context.Context, id int, options ...option) (Book, error) {
 	type goodreadsResponse struct {
 		Book Book `xml:"book"`
 	}
 
 	url := fmt.Sprintf("%s/book/show/%d.xml", client.getURL(), id)
-	request, err := client.newRequestWithKey(http.MethodGet, url, nil)
+	request, err := client.newRequestWithKey(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return Book{}, err
 	}

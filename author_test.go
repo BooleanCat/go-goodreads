@@ -2,6 +2,7 @@ package goodreads_test
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -18,7 +19,7 @@ func ExampleClient_AuthorShow() {
 	transport := httputils.DripLimit(http.DefaultTransport, ticker)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}}
 
-	book, err := client.AuthorShow(4764)
+	book, err := client.AuthorShow(context.Background(), 4764)
 	if err != nil {
 		panic(err)
 	}
@@ -37,7 +38,7 @@ func TestClient_AuthorShow(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	author, err := client.AuthorShow(123)
+	author, err := client.AuthorShow(context.Background(), 123)
 	assert.Nil(t, err)
 	assert.Equal(t, author, goodreads.Author{
 		ID:                   123,
@@ -69,7 +70,7 @@ func TestClient_AuthorShow_CreateRequestFails(t *testing.T) {
 	transport := new(fakes.FakeRoundTripper)
 	client := goodreads.Client{Client: nil, Key: "key", URL: "%%%"}
 
-	_, err := client.AuthorShow(123)
+	_, err := client.AuthorShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^create request: `)
 	assert.Equal(t, transport.RoundTripCallCount(), 0)
 }
@@ -79,7 +80,7 @@ func TestClient_AuthorShow_DoRequestFails(t *testing.T) {
 	transport.RoundTripReturns(nil, errors.New("oops"))
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.AuthorShow(123)
+	_, err := client.AuthorShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^do request: .*oops$`)
 }
 
@@ -91,7 +92,7 @@ func TestClient_AuthorShow_InvalidStatusCode(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.AuthorShow(123)
+	_, err := client.AuthorShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
 }
 
@@ -103,7 +104,7 @@ func TestClient_AuthorShow_DecodeFails(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.AuthorShow(123)
+	_, err := client.AuthorShow(context.Background(), 123)
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 

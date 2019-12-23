@@ -1,6 +1,7 @@
 package goodreads
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -78,13 +79,13 @@ func closeIgnoreError(c io.Closer) {
 	_ = c.Close()
 }
 
-func (client Client) newRequestWithKey(method, url string, body io.Reader) (*http.Request, error) {
+func (client Client) newRequestWithKey(ctx context.Context, method, url string, body io.Reader) (*http.Request, error) {
 	key, err := client.goodreadsKey()
 	if err != nil {
 		return nil, err
 	}
 
-	request, err := http.NewRequest(method, url, body)
+	request, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
 	}
