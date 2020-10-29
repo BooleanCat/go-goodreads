@@ -15,7 +15,7 @@ linters:
   - wsl
   - maligned
   - funlen
-  - lll
   - dupl
 linters-settings:
   maligned: {suggest-new: true}
+  lll: {line-length: 120}

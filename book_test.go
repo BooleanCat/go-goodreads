@@ -122,7 +122,12 @@ func TestClient_BookShow_OptionalParams(t *testing.T) {
 	}, nil)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.BookShow(context.Background(), 123, goodreads.BookShowOptions.TextOnly(), goodreads.BookShowOptions.Rating(3.456))
+	_, err := client.BookShow(
+		context.Background(),
+		123,
+		goodreads.BookShowOptions.TextOnly(),
+		goodreads.BookShowOptions.Rating(3.456),
+	)
 	assert.Nil(t, err)
 
 	assert.Equal(t, transport.RoundTripCallCount(), 1)
