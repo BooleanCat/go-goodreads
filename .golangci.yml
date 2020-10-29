@@ -9,7 +9,7 @@ linters:
   disable:
   - gochecknoglobals
   - exhaustivestruct
-  - dupl
 linters-settings:
   maligned: {suggest-new: true}
   lll: {line-length: 120}
+  dupl: {threshold: 200}
