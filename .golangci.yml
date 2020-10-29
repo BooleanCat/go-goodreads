@@ -9,7 +9,6 @@ linters:
   disable:
   - gochecknoglobals
   - exhaustivestruct
-  - maligned
   - dupl
 linters-settings:
   maligned: {suggest-new: true}

@@ -25,9 +25,7 @@ type Book struct {
 	PublicationDay     int          `xml:"publication_day"`
 	Publisher          string       `xml:"publisher"`
 	LanguageCode       string       `xml:"language_code"`
-	IsEbook            bool         `xml:"is_ebook"`
 	Description        string       `xml:"description"`
-	AverageRating      float32      `xml:"average_rating"`
 	NumPages           int          `xml:"num_pages"`
 	Format             string       `xml:"format"`
 	EditionInformation string       `xml:"edition_information"`
@@ -42,6 +40,8 @@ type Book struct {
 	BuyLinks           []Link       `xml:"buy_links>buy_link"`
 	SeriesWorks        []SeriesWork `xml:"series_works>series_work"`
 	SimilarBooks       []Book       `xml:"similar_books>book"`
+	AverageRating      float32      `xml:"average_rating"`
+	IsEbook            bool         `xml:"is_ebook"`
 }
 
 // A Work contains information about a work as defined by Goodreads.
