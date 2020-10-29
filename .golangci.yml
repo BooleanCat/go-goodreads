@@ -10,7 +10,6 @@ linters:
   - gochecknoglobals
   - exhaustivestruct
   - maligned
-  - funlen
   - dupl
 linters-settings:
   maligned: {suggest-new: true}
