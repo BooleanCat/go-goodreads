@@ -1,0 +1,21 @@
+linters:
+  presets:
+  - bugs
+  - complexity
+  - unused
+  - performance
+  - format
+  - style
+  disable:
+  - nlreturn
+  - goerr113
+  - gochecknoglobals
+  - exhaustivestruct
+  - bodyclose
+  - wsl
+  - maligned
+  - funlen
+  - lll
+  - dupl
+linters-settings:
+  maligned: {suggest-new: true}
