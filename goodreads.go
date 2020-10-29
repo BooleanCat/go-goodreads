@@ -44,6 +44,7 @@ type optionsDef struct{}
 func (o optionsDef) Key(key string) func(url.Values) url.Values {
 	return func(values url.Values) url.Values {
 		values.Set("key", key)
+
 		return values
 	}
 }

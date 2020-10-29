@@ -7,7 +7,6 @@ linters:
   - format
   - style
   disable:
-  - nlreturn
   - goerr113
   - gochecknoglobals
   - exhaustivestruct

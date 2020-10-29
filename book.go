@@ -144,6 +144,7 @@ var BookShowOptions = bookShowOptionsDef{}
 func (o bookShowOptionsDef) TextOnly() func(url.Values) url.Values {
 	return func(values url.Values) url.Values {
 		values.Set("text_only", "true")
+
 		return values
 	}
 }
@@ -151,6 +152,7 @@ func (o bookShowOptionsDef) TextOnly() func(url.Values) url.Values {
 func (o bookShowOptionsDef) Rating(r float32) func(url.Values) url.Values {
 	return func(values url.Values) url.Values {
 		values.Set("rating", fmt.Sprintf("%.2f", r))
+
 		return values
 	}
 }
