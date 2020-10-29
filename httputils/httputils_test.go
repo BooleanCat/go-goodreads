@@ -18,7 +18,7 @@ func TestDripLimit(t *testing.T) {
 	defer ticker.Stop()
 	client := httputils.DripLimit(transport, ticker)
 
-	_, err := client.RoundTrip(new(http.Request))
+	_, err := client.RoundTrip(new(http.Request)) //nolint:bodyclose
 	assert.Nil(t, err)
 	assert.Equal(t, transport.RoundTripCallCount(), 1)
 }
@@ -31,6 +31,6 @@ func TestDripLimit_DelegateDoFails(t *testing.T) {
 	defer ticker.Stop()
 	client := httputils.DripLimit(transport, ticker)
 
-	_, err := client.RoundTrip(new(http.Request))
+	_, err := client.RoundTrip(new(http.Request)) //nolint:bodyclose
 	assert.ErrorMatches(t, err, `oops`)
 }
