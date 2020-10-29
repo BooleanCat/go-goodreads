@@ -26,21 +26,8 @@ func (client Client) String() string {
 	return fmt.Sprintf("{%v}", client.Client)
 }
 
-// Options contains methods that may be provided to any client method that
-// supports options.
-//
-// Provided options are:
-// 1. Key - a Goodreads API key
-//
-// These options are automatically added to Goodreads client calls that require
-// them by first looking at the value of client.Key then falling back to
-// reading the GOODREADS_KEY environmental variable. An error is returned by
-// any client method that requires an API key but is unable to load it.
-var Options = optionsDef{}
-
-type optionsDef struct{}
-
-func (o optionsDef) Key(key string) func(url.Values) url.Values {
+// OptionKey adds the goodreads API key to API calls.
+func OptionKey(key string) func(url.Values) url.Values {
 	return func(values url.Values) url.Values {
 		values.Set("key", key)
 
@@ -91,7 +78,7 @@ func (client Client) newRequestWithKey(ctx context.Context, method, url string, 
 		return nil, fmt.Errorf("create request: %w", err)
 	}
 
-	return setOptions(request, Options.Key(key)), nil
+	return setOptions(request, OptionKey(key)), nil
 }
 
 func (client Client) getClient() *http.Client {

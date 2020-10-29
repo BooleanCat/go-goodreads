@@ -18,7 +18,7 @@ func ExampleClient_BookShow() {
 	transport := httputils.DripLimit(http.DefaultTransport, ticker)
 	client := goodreads.Client{Client: &http.Client{Transport: transport}}
 
-	book, err := client.BookShow(context.Background(), 36402034, goodreads.BookShowOptions.TextOnly())
+	book, err := client.BookShow(context.Background(), 36402034, goodreads.OptionTextOnly)
 	if err != nil {
 		panic(err)
 	}
@@ -58,12 +58,7 @@ func TestClient_BookShow_OptionalParams(t *testing.T) {
 
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
-	_, err := client.BookShow(
-		context.Background(),
-		123,
-		goodreads.BookShowOptions.TextOnly(),
-		goodreads.BookShowOptions.Rating(3.456),
-	)
+	_, err := client.BookShow(context.Background(), 123, goodreads.OptionTextOnly, goodreads.OptionRating(3.456))
 	assert.Nil(t, err)
 
 	assert.Equal(t, transport.RoundTripCallCount(), 1)

@@ -10,7 +10,7 @@ import (
 	"github.com/BooleanCat/go-goodreads/internal/assert"
 )
 
-var ticker *time.Ticker
+var ticker *time.Ticker //nolint:gochecknoglobals
 
 func TestMain(m *testing.M) {
 	ticker = time.NewTicker(time.Second * 2)
