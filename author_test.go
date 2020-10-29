@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/BooleanCat/go-goodreads"
-	"github.com/BooleanCat/go-goodreads/assert"
-	"github.com/BooleanCat/go-goodreads/fakes"
 	"github.com/BooleanCat/go-goodreads/httputils"
+	"github.com/BooleanCat/go-goodreads/internal/assert"
+	"github.com/BooleanCat/go-goodreads/internal/fakes"
 )
 
 func ExampleClient_AuthorShow() {

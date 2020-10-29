@@ -110,4 +110,4 @@ func (client Client) getURL() string {
 }
 
 //go:generate counterfeiter --generate
-//counterfeiter:generate -o fakes/roundtripper.go net/http.RoundTripper
+//counterfeiter:generate -o internal/fakes/roundtripper.go net/http.RoundTripper

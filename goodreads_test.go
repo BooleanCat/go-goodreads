@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/BooleanCat/go-goodreads"
-	"github.com/BooleanCat/go-goodreads/assert"
+	"github.com/BooleanCat/go-goodreads/internal/assert"
 )
 
 var ticker *time.Ticker
