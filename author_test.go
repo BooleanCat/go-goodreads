@@ -3,7 +3,6 @@ package goodreads_test
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -78,7 +77,7 @@ func TestClient_AuthorShow_CreateRequestFails(t *testing.T) {
 
 func TestClient_AuthorShow_DoRequestFails(t *testing.T) {
 	transport := new(fakes.FakeRoundTripper)
-	transport.RoundTripReturns(nil, errors.New("oops"))
+	transport.RoundTripReturns(nil, fakeErr{})
 
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
@@ -96,7 +95,7 @@ func TestClient_AuthorShow_InvalidStatusCode(t *testing.T) {
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.AuthorShow(context.Background(), 123)
-	assert.ErrorMatches(t, err, `^unexpected status code "405"$`)
+	assert.ErrorMatches(t, err, `^unexpected status code: 405$`)
 }
 
 func TestClient_AuthorShow_DecodeFails(t *testing.T) {

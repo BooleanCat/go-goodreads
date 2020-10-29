@@ -49,7 +49,7 @@ func (client Client) AuthorShow(ctx context.Context, id int) (Author, error) {
 	defer closeIgnoreError(response.Body)
 
 	if response.StatusCode != http.StatusOK {
-		return Author{}, fmt.Errorf(`unexpected status code "%d"`, response.StatusCode)
+		return Author{}, ErrUnexpectedResponse{Code: response.StatusCode}
 	}
 
 	var author goodreadsResponse

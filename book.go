@@ -119,7 +119,7 @@ func (client Client) BookShow(ctx context.Context, id int, options ...option) (B
 	defer closeIgnoreError(response.Body)
 
 	if response.StatusCode != http.StatusOK {
-		return Book{}, fmt.Errorf(`unexpected status code "%d"`, response.StatusCode)
+		return Book{}, ErrUnexpectedResponse{Code: response.StatusCode}
 	}
 
 	var book goodreadsResponse

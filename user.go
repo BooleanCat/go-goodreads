@@ -46,7 +46,7 @@ func (client Client) UserShow(ctx context.Context, id int) (User, error) {
 	defer closeIgnoreError(response.Body)
 
 	if response.StatusCode != http.StatusOK {
-		return User{}, fmt.Errorf(`unexpected status code "%d"`, response.StatusCode)
+		return User{}, ErrUnexpectedResponse{Code: response.StatusCode}
 	}
 
 	var user goodreadsResponse

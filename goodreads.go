@@ -2,7 +2,6 @@ package goodreads
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -72,7 +71,7 @@ func (client Client) goodreadsKey() (string, error) {
 		return key, nil
 	}
 
-	return "", errors.New("goodreads API key not set")
+	return "", ErrAPIKeyNotSet{}
 }
 
 const defaultGoodreadsURL = "https://www.goodreads.com"

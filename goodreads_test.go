@@ -26,3 +26,11 @@ func TestClient_String(t *testing.T) {
 	assert.DoesNotContainSubstring(t, fmt.Sprint(client), "foo")
 	assert.DoesNotContainSubstring(t, fmt.Sprint(client), "bar")
 }
+
+type fakeErr struct{}
+
+func (err fakeErr) Error() string {
+	return "oops"
+}
+
+var _ error = fakeErr{}

@@ -1,7 +1,6 @@
 package httputils_test
 
 import (
-	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -25,7 +24,7 @@ func TestDripLimit(t *testing.T) {
 
 func TestDripLimit_DelegateDoFails(t *testing.T) {
 	transport := new(fakes.FakeRoundTripper)
-	transport.RoundTripReturns(nil, errors.New("oops"))
+	transport.RoundTripReturns(nil, fakeErr{})
 
 	ticker := time.NewTicker(time.Millisecond)
 	defer ticker.Stop()
@@ -34,3 +33,11 @@ func TestDripLimit_DelegateDoFails(t *testing.T) {
 	_, err := client.RoundTrip(new(http.Request)) //nolint:bodyclose
 	assert.ErrorMatches(t, err, `oops`)
 }
+
+type fakeErr struct{}
+
+func (err fakeErr) Error() string {
+	return "oops"
+}
+
+var _ error = fakeErr{}
