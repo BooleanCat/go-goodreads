@@ -35,6 +35,7 @@ func (client Client) AuthorShow(ctx context.Context, id int) (Author, error) {
 	}
 
 	url := fmt.Sprintf("%s/author/show/%d.xml", client.getURL(), id)
+
 	request, err := client.newRequestWithKey(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return Author{}, err
@@ -44,6 +45,7 @@ func (client Client) AuthorShow(ctx context.Context, id int) (Author, error) {
 	if err != nil {
 		return Author{}, fmt.Errorf("do request: %w", err)
 	}
+
 	defer closeIgnoreError(response.Body)
 
 	if response.StatusCode != http.StatusOK {

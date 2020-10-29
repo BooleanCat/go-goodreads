@@ -58,6 +58,7 @@ func setOptions(request *http.Request, options ...option) *http.Request {
 	}
 
 	request.URL.RawQuery = query.Encode()
+
 	return request
 }
 

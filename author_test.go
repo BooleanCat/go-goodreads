@@ -36,6 +36,7 @@ func TestClient_AuthorShow(t *testing.T) {
 		Body:       ioutil.NopCloser(responseBody),
 		StatusCode: http.StatusOK,
 	}, nil)
+
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	author, err := client.AuthorShow(context.Background(), 123)
@@ -78,6 +79,7 @@ func TestClient_AuthorShow_CreateRequestFails(t *testing.T) {
 func TestClient_AuthorShow_DoRequestFails(t *testing.T) {
 	transport := new(fakes.FakeRoundTripper)
 	transport.RoundTripReturns(nil, errors.New("oops"))
+
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.AuthorShow(context.Background(), 123)
@@ -90,6 +92,7 @@ func TestClient_AuthorShow_InvalidStatusCode(t *testing.T) {
 		Body:       ioutil.NopCloser(new(bytes.Buffer)),
 		StatusCode: http.StatusMethodNotAllowed,
 	}, nil)
+
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.AuthorShow(context.Background(), 123)
@@ -102,6 +105,7 @@ func TestClient_AuthorShow_DecodeFails(t *testing.T) {
 		Body:       ioutil.NopCloser(new(bytes.Buffer)),
 		StatusCode: http.StatusOK,
 	}, nil)
+
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.AuthorShow(context.Background(), 123)

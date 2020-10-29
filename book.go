@@ -105,6 +105,7 @@ func (client Client) BookShow(ctx context.Context, id int, options ...option) (B
 	}
 
 	url := fmt.Sprintf("%s/book/show/%d.xml", client.getURL(), id)
+
 	request, err := client.newRequestWithKey(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return Book{}, err
@@ -114,6 +115,7 @@ func (client Client) BookShow(ctx context.Context, id int, options ...option) (B
 	if err != nil {
 		return Book{}, fmt.Errorf("do request: %w", err)
 	}
+
 	defer closeIgnoreError(response.Body)
 
 	if response.StatusCode != http.StatusOK {

@@ -16,6 +16,7 @@ func TestMain(m *testing.M) {
 	ticker = time.NewTicker(time.Second * 2)
 
 	exitCode := m.Run()
+
 	ticker.Stop()
 	os.Exit(exitCode)
 }

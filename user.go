@@ -32,6 +32,7 @@ func (client Client) UserShow(ctx context.Context, id int) (User, error) {
 	}
 
 	url := fmt.Sprintf("%s/user/show/%d.xml", client.getURL(), id)
+
 	request, err := client.newRequestWithKey(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return User{}, err
@@ -41,6 +42,7 @@ func (client Client) UserShow(ctx context.Context, id int) (User, error) {
 	if err != nil {
 		return User{}, fmt.Errorf("do request: %w", err)
 	}
+
 	defer closeIgnoreError(response.Body)
 
 	if response.StatusCode != http.StatusOK {
