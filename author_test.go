@@ -111,6 +111,18 @@ func TestClient_AuthorShow_DecodeFails(t *testing.T) {
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 
+func TestClient_AuthorShow_NotFound(t *testing.T) {
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(&http.Response{
+		StatusCode: http.StatusNotFound,
+	}, nil)
+
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
+
+	_, err := client.AuthorShow(context.Background(), 123)
+	assert.True(t, goodreads.IsNotFound(err))
+}
+
 const authorShowResponseBody string = `
 	<goodreads_response>
 		<author>

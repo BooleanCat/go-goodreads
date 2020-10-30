@@ -40,3 +40,9 @@ func DoesNotContainSubstring(t *testing.T, x, y string) {
 		t.Fatalf(`expected "%s" not to contain "%s"`, x, y)
 	}
 }
+
+func True(t *testing.T, v interface{}) {
+	if !reflect.DeepEqual(v, true) {
+		t.Fatal("expected true")
+	}
+}

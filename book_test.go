@@ -121,7 +121,7 @@ func TestClient_BookShowNotFound(t *testing.T) {
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.BookShow(context.Background(), 123)
-	assert.Equal(t, goodreads.IsNotFound(err), true)
+	assert.True(t, goodreads.IsNotFound(err))
 }
 
 const bookShowResponseBody string = `

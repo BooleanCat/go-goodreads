@@ -121,7 +121,7 @@ func TestClient_UserShow_NotFound(t *testing.T) {
 	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
 
 	_, err := client.UserShow(context.Background(), 213)
-	assert.Equal(t, goodreads.IsNotFound(err), true)
+	assert.True(t, goodreads.IsNotFound(err))
 }
 
 const userShowResponseBody string = `

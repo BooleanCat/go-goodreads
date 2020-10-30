@@ -48,7 +48,12 @@ func (client Client) AuthorShow(ctx context.Context, id int) (Author, error) {
 
 	defer closeIgnoreError(response.Body)
 
-	if response.StatusCode != http.StatusOK {
+	switch response.StatusCode {
+	case http.StatusNotFound:
+		return Author{}, ErrNotFound{}
+	case http.StatusOK:
+		break
+	default:
 		return Author{}, ErrUnexpectedResponse{Code: response.StatusCode}
 	}
 
