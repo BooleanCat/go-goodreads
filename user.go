@@ -45,7 +45,12 @@ func (client Client) UserShow(ctx context.Context, id int) (User, error) {
 
 	defer closeIgnoreError(response.Body)
 
-	if response.StatusCode != http.StatusOK {
+	switch response.StatusCode {
+	case http.StatusNotFound:
+		return User{}, ErrNotFound{}
+	case http.StatusOK:
+		break
+	default:
 		return User{}, ErrUnexpectedResponse{Code: response.StatusCode}
 	}
 
