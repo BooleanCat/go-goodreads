@@ -5,7 +5,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
-	"net/url"
+
+	"github.com/BooleanCat/go-goodreads/param"
 )
 
 // A Book contains information about a book as defined by Goodreads.
@@ -99,7 +100,7 @@ type Series struct {
 
 // BookShow fetches reviews for a book given a Goodreads book ID. Optional parameters OptionTextOnly or OptionRating
 // may be provided.
-func (client Client) BookShow(ctx context.Context, id int, options ...option) (Book, error) {
+func (client Client) BookShow(ctx context.Context, id int, params ...param.Param) (Book, error) {
 	type goodreadsResponse struct {
 		Book Book `xml:"book"`
 	}
@@ -111,7 +112,7 @@ func (client Client) BookShow(ctx context.Context, id int, options ...option) (B
 		return Book{}, err
 	}
 
-	response, err := client.getClient().Do(setOptions(request, options...))
+	response, err := client.getClient().Do(param.Apply(request, params...))
 	if err != nil {
 		return Book{}, fmt.Errorf("do request: %w", err)
 	}
@@ -128,20 +129,4 @@ func (client Client) BookShow(ctx context.Context, id int, options ...option) (B
 	}
 
 	return book.Book, nil
-}
-
-// OptionTextOnly shows only reviews with text.
-func OptionTextOnly(values url.Values) url.Values {
-	values.Set("text_only", "true")
-
-	return values
-}
-
-// OptionRating shows only reviews with a given rating.
-func OptionRating(r float32) func(url.Values) url.Values {
-	return func(values url.Values) url.Values {
-		values.Set("rating", fmt.Sprintf("%.2f", r))
-
-		return values
-	}
 }

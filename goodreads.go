@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"os"
+
+	"github.com/BooleanCat/go-goodreads/param"
 )
 
 // Client is used to communicate with the Goodreads API. A zero value client
@@ -24,29 +25,6 @@ type Client struct {
 
 func (client Client) String() string {
 	return fmt.Sprintf("{%v}", client.Client)
-}
-
-// OptionKey adds the goodreads API key to API calls.
-func OptionKey(key string) func(url.Values) url.Values {
-	return func(values url.Values) url.Values {
-		values.Set("key", key)
-
-		return values
-	}
-}
-
-type option func(url.Values) url.Values
-
-func setOptions(request *http.Request, options ...option) *http.Request {
-	query := request.URL.Query()
-
-	for _, o := range options {
-		o(query)
-	}
-
-	request.URL.RawQuery = query.Encode()
-
-	return request
 }
 
 func (client Client) goodreadsKey() (string, error) {
@@ -78,7 +56,7 @@ func (client Client) newRequestWithKey(ctx context.Context, method, url string, 
 		return nil, fmt.Errorf("create request: %w", err)
 	}
 
-	return setOptions(request, OptionKey(key)), nil
+	return param.Apply(request, param.APIKey(key)), nil
 }
 
 func (client Client) getClient() *http.Client {
