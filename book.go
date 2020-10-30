@@ -119,7 +119,12 @@ func (client Client) BookShow(ctx context.Context, id int, params ...param.Param
 
 	defer closeIgnoreError(response.Body)
 
-	if response.StatusCode != http.StatusOK {
+	switch response.StatusCode {
+	case http.StatusNotFound:
+		return Book{}, ErrNotFound{}
+	case http.StatusOK:
+		break
+	default:
 		return Book{}, ErrUnexpectedResponse{Code: response.StatusCode}
 	}
 

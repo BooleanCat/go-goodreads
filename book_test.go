@@ -112,6 +112,18 @@ func TestClient_BookShow_DecodeFails(t *testing.T) {
 	assert.ErrorMatches(t, err, `^decode response: `)
 }
 
+func TestClient_BookShowNotFound(t *testing.T) {
+	transport := new(fakes.FakeRoundTripper)
+	transport.RoundTripReturns(&http.Response{
+		StatusCode: http.StatusNotFound,
+	}, nil)
+
+	client := goodreads.Client{Client: &http.Client{Transport: transport}, Key: "key"}
+
+	_, err := client.BookShow(context.Background(), 123)
+	assert.Equal(t, goodreads.IsNotFound(err), true)
+}
+
 const bookShowResponseBody string = `
 	<goodreads_response>
 		<book>

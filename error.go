@@ -1,6 +1,9 @@
 package goodreads
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // ErrUnexpectedResponse is returned when an API call received a response with a status code it did not expect.
 type ErrUnexpectedResponse struct {
@@ -21,3 +24,19 @@ func (err ErrAPIKeyNotSet) Error() string {
 }
 
 var _ error = ErrAPIKeyNotSet{}
+
+// ErrNotFound is returned when an API call could not find a requested resource.
+type ErrNotFound struct{}
+
+func (err ErrNotFound) Error() string {
+	return "not found"
+}
+
+var _ error = ErrNotFound{}
+
+// IsNotFound returns true if err is an ErrNotFound.
+func IsNotFound(err error) bool {
+	var e ErrNotFound
+
+	return errors.As(err, &e)
+}
