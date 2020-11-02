@@ -7,7 +7,9 @@ vet:
 	go vet ./...
 
 lint:
+ifndef SKIP_LINT
 	golangci-lint run
+endif
 
 generate:
 	go generate ./...
